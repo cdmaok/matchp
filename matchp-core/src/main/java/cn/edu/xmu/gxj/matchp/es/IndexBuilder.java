@@ -1,12 +1,10 @@
 package cn.edu.xmu.gxj.matchp.es;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-import static org.elasticsearch.node.NodeBuilder.*;
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.lucene.search.vectorhighlight.FieldQuery;
-import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -14,12 +12,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
@@ -27,7 +20,6 @@ import org.elasticsearch.search.SearchHit;
 import com.google.gson.Gson;
 
 import cn.edu.xmu.gxj.matchp.model.Weibo;
-import cn.edu.xmu.gxj.matchp.model.WeiboTest;
 
 public class IndexBuilder {
 
@@ -53,8 +45,8 @@ public class IndexBuilder {
 	}
 
 	public static Node getNode() {
-		ImmutableSettings.Builder elasticsearchSettings = ImmutableSettings.settingsBuilder().put("cluster.name",
-				"locales");
+		Settings.Builder elasticsearchSettings = Settings.settingsBuilder().put("cluster.name",
+				"locales").put("path.home","E:\\workspace\\matchp\\matchp-core");
 		Node node = nodeBuilder().local(true).settings(elasticsearchSettings.build()).node();
 
 		return node;
@@ -85,7 +77,7 @@ public class IndexBuilder {
 		GetRequestBuilder getRequestBuilder = geteasyClient().prepareGet(indexName, documentType, null);
 		// getRequestBuilder.setFields(new String[]{"name"});
 		GetResponse response = getRequestBuilder.execute().actionGet();
-		String name = response.field("name").getValue().toString();
+		String name = response.getField("name").getValue().toString();
 		System.out.println(name);
 	}
 
