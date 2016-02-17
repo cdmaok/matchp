@@ -62,7 +62,17 @@
 	<artifactId>compiler</artifactId>
 	<version>0.8.9</version>
 </dependency>
-		
+
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxrs</artifactId>
+			<version>3.0.10.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.1.4.RELEASE</version>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>matchp-core</module>

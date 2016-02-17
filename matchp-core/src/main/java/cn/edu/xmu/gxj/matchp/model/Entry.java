@@ -9,6 +9,10 @@ public class Entry {
 		this.url = url;
 	}
 	
+	public Entry(Weibo weibo){
+		this(weibo.getText(),weibo.getImg_url());
+	}
+	
 	public String getText() {
 		return text;
 	}

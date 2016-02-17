@@ -45,6 +45,7 @@ public class IndexBuilder {
 	}
 
 	public static Node getNode() {
+		//TODO : to change to standard Path
 		Settings.Builder elasticsearchSettings = Settings.settingsBuilder().put("cluster.name",
 				"locales").put("path.home","E:\\workspace\\matchp\\matchp-core");
 		Node node = nodeBuilder().local(true).settings(elasticsearchSettings.build()).node();

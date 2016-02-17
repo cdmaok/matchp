@@ -10,6 +10,14 @@ public class Weibo implements Cloneable{
 	private Weibo() {
 	}
 	
+	public Weibo(Map<String, Object> map){
+		this.comment_no = (String) map.get("comment_no");
+		this.text = (String) map.get("text");
+		this.uid = (String) map.get("uid");
+		this.like_no = (String) map.get("like_no");
+		this.rt_no = (String) map.get("rt_no");
+		this.img_url = (String) map.get("img_url");
+	}
 	
 	private String comment_no;
 	private String text;
