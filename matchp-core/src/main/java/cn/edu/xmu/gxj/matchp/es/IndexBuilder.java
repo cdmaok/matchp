@@ -16,13 +16,25 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
 import cn.edu.xmu.gxj.matchp.model.Weibo;
 
+@Component
 public class IndexBuilder {
 
+	public IndexBuilder() {
+		try {
+			addDoc();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	static String indexName = "matchp";
 	static String documentType = "weibo";
 	
@@ -53,7 +65,7 @@ public class IndexBuilder {
 		return node;
 	}
 
-	public static void addDoc() throws IOException, CloneNotSupportedException {
+	public void addDoc() throws IOException, CloneNotSupportedException {
 
 		// Add documents
 		IndexRequestBuilder indexRequestBuilder = geteasyClient().prepareIndex(indexName, documentType);
@@ -82,7 +94,7 @@ public class IndexBuilder {
 		System.out.println(name);
 	}
 
-	public static void searchDoc() {
+	public  void searchDoc() {
 		
 		SearchResponse response = geteasyClient().prepareSearch(indexName).setTypes(documentType).setSearchType(SearchType.QUERY_AND_FETCH)
 //				.setQuery(QueryBuilders.fieldQuery("like_no", "0")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
@@ -102,9 +114,10 @@ public class IndexBuilder {
 		String indexName = "";
 		// CreateIndexRequestBuilder builder =
 		// geteasyClient().admin().indices().prepareCreate(indexName);
-		addDoc();
+		IndexBuilder index = new IndexBuilder();
+		index.addDoc();
 //		readDoc();
-		searchDoc();
+		index.searchDoc();
 
 	}
 

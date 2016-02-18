@@ -10,10 +10,8 @@
       <pattern>%msg%n</pattern>
     </encoder>
   </appender>
-  <logger name="my.package" level = "DEBUG"/>
-  <logger name="my.package.class" level = "DEBUG"/>
-
-  <root level="INFO">
+  <logger name="org.springframework.context.annotation" level = "DEBUG"/>
+  <root level="DEBUG">
     <appender-ref ref="FILE" />
     <appender-ref ref="STDOUT" />
   </root>
