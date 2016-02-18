@@ -94,11 +94,11 @@ public class IndexBuilder {
 		System.out.println(name);
 	}
 
-	public  void searchDoc() {
+	public  void searchDoc(String query) {
 		
 		SearchResponse response = geteasyClient().prepareSearch(indexName).setTypes(documentType).setSearchType(SearchType.QUERY_AND_FETCH)
 //				.setQuery(QueryBuilders.fieldQuery("like_no", "0")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
-		.setQuery(QueryBuilders.matchQuery("text", "今天")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
+		.setQuery(QueryBuilders.matchQuery("text", query)).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 
 		SearchHit[] results = response.getHits().getHits();
 
@@ -117,7 +117,7 @@ public class IndexBuilder {
 		IndexBuilder index = new IndexBuilder();
 		index.addDoc();
 //		readDoc();
-		index.searchDoc();
+		index.searchDoc("今天");
 
 	}
 
