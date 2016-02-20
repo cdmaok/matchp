@@ -1,0 +1,9 @@
+<script type="text/javascript" src="../js/angular.js"></script>
+<div name="entryTable" ng-app="matchp">
+  <table ng-show="results.value.length > 0">
+    <tr ng-repeat="result in results">
+      <td>{{result.text}}</td>
+      <td>{{result.url}}</td>
+    </tr>
+  </table>
+</div>

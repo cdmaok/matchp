@@ -3,6 +3,7 @@ package cn.edu.xmu.gxj.matchp.es;
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.elasticsearch.action.get.GetRequestBuilder;
@@ -16,10 +17,13 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
+import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.model.Weibo;
 
 @Component
@@ -37,6 +41,8 @@ public class IndexBuilder {
 	
 	static String indexName = "matchp";
 	static String documentType = "weibo";
+	
+	static final Logger logger = LoggerFactory.getLogger(IndexBuilder.class);
 	
 	public static String str = "{\"comment_no\": \"0\", "
 			+ "\"text\": \"今天起来得早吧～我都出去一趟回来老。早起的鸟儿有虫吃[鼓掌][鼓掌]懒猪们 ，早安 [呲牙][太阳]http://ww1.sinaimg.cn/wap128/a033dfefjw1efzm1oluakj20dc0hstae.jpg\", "
@@ -94,20 +100,25 @@ public class IndexBuilder {
 		System.out.println(name);
 	}
 
-	public  void searchDoc(String query) {
+	public String searchDoc(String query) {
 		
 		SearchResponse response = geteasyClient().prepareSearch(indexName).setTypes(documentType).setSearchType(SearchType.QUERY_AND_FETCH)
 //				.setQuery(QueryBuilders.fieldQuery("like_no", "0")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 		.setQuery(QueryBuilders.matchQuery("text", query)).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 
 		SearchHit[] results = response.getHits().getHits();
-
-		System.out.println("Current results: " + results.length);
+		logger.info("Current results: {}" + results.length );
+		ArrayList<Entry> resultList = new ArrayList<Entry>();
 		for (SearchHit hit : results) {
 			System.out.println("------------------------------");
 			Map<String, Object> result = hit.getSource();
-			System.out.println(result + "," + hit.getScore());
+			Weibo weibo = new Weibo(result);
+			Entry entry = new Entry(weibo);
+			resultList.add(entry);
+			logger.debug(result + "," + hit.getScore());
+
 		}
+		return new Gson().toJson(resultList);
 	}
 
 	public static void main(String[] args) throws IOException, CloneNotSupportedException {
@@ -115,7 +126,7 @@ public class IndexBuilder {
 		// CreateIndexRequestBuilder builder =
 		// geteasyClient().admin().indices().prepareCreate(indexName);
 		IndexBuilder index = new IndexBuilder();
-		index.addDoc();
+//		index.addDoc();
 //		readDoc();
 		index.searchDoc("今天");
 

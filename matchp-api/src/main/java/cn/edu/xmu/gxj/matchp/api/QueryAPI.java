@@ -13,6 +13,7 @@ public interface QueryAPI {
 
 	@GET
 	Response QueryShortText(@QueryParam("q")String queryText);
+	
 	//TODO: to add long text interface
 	@POST
 	Response QueryLongText();

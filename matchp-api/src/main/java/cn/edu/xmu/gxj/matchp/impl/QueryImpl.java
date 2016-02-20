@@ -2,6 +2,8 @@ package cn.edu.xmu.gxj.matchp.impl;
 
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,14 +16,17 @@ public class QueryImpl implements QueryAPI{
 	@Autowired
 	public IndexBuilder indexBuilder;
 	
+	
+	private static final Logger logger = LoggerFactory.getLogger(QueryImpl.class);
 
 	public Response QueryLongText() {
 		return null;
 	}
 
 	public Response QueryShortText(String queryText) {
-		indexBuilder.searchDoc(queryText);
-		return Response.ok().entity("hello").build();
+		logger.info("query is {}",queryText);
+		String ret = indexBuilder.searchDoc(queryText);
+		return Response.ok().entity(ret).build();
 	}
 
 }
