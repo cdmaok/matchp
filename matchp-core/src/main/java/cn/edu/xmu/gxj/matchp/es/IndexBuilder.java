@@ -74,7 +74,8 @@ public class IndexBuilder {
 	public void addDoc() throws IOException, CloneNotSupportedException {
 
 		// Add documents
-		IndexRequestBuilder indexRequestBuilder = geteasyClient().prepareIndex(indexName, documentType);
+		Client c = geteasyClient();
+		IndexRequestBuilder indexRequestBuilder = c.prepareIndex(indexName, documentType);
 		// build json object
 		// XContentBuilder contentBuilder =
 		// jsonBuilder().startObject().prettyPrint();
@@ -88,6 +89,7 @@ public class IndexBuilder {
 
 		indexRequestBuilder.setSource(newWeibo.toMap());
 		IndexResponse response = indexRequestBuilder.execute().actionGet();
+		c.close();
 	}
 
 	public static void readDoc() {
@@ -101,8 +103,8 @@ public class IndexBuilder {
 	}
 
 	public String searchDoc(String query) {
-		
-		SearchResponse response = geteasyClient().prepareSearch(indexName).setTypes(documentType).setSearchType(SearchType.QUERY_AND_FETCH)
+		Client c = geteasyClient();
+		SearchResponse response = c.prepareSearch(indexName).setTypes(documentType).setSearchType(SearchType.QUERY_AND_FETCH)
 //				.setQuery(QueryBuilders.fieldQuery("like_no", "0")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 		.setQuery(QueryBuilders.matchQuery("text", query)).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 
@@ -118,6 +120,7 @@ public class IndexBuilder {
 			logger.debug(result + "," + hit.getScore());
 
 		}
+		c.close();
 		return new Gson().toJson(resultList);
 	}
 

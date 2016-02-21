@@ -23,12 +23,10 @@
       ></textarea>
       <br>
       <input type="submit" id="submit" value="Submit" ng-click="search()"/>
-      <h1>{{clock}}</h1>
-      <h1>{{queryText}}</h1>
-      <h1>{{abceee}}</h1>
       <div class="error" ng-show="queryForm.$invalid && queryForm.$submitted" class="btn btn-primary">
         <h1>please check the input length</h1>
       </div>
+	  <div ng-include src="'result.html'"> </div>
     </form>
   </div>
 </div>

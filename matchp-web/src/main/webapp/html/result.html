@@ -1,9 +1,18 @@
 <script type="text/javascript" src="../js/angular.js"></script>
-<div name="entryTable" ng-app="matchp">
-  <table ng-show="results.value.length > 0">
-    <tr ng-repeat="result in results">
-      <td>{{result.text}}</td>
-      <td>{{result.url}}</td>
-    </tr>
-  </table>
+<div name="entryTable">
+  <div><h1>total result: {{results.length}}</h1></div>
+  <div ng-show="results.length > 0">
+      <div ng-repeat="result in results" ng-if="$index < 10" >	 
+		<img alt="{{result.text}}" src="{{result.url}}" />
+	 </div>
+	<!--
+	<div >
+	<table>
+	<tr >
+		<td ng-repeat= "result in results"><img alt="{{result.text}}" src="{{result.url}}" ng-if="$index < 10"/>{{$index}}</td>
+	</tr>
+	</table>
+	</div>
+	-->
+  </div>
 </div>
