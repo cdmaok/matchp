@@ -19,16 +19,20 @@ import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
 import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.model.Weibo;
+import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
 @Component
 public class IndexBuilder {
-
+	@Autowired
+	private static MatchpConfig matchpconfig;
+	
 	public IndexBuilder() {
 		try {
 			addDoc();
@@ -63,9 +67,8 @@ public class IndexBuilder {
 	}
 
 	public static Node getNode() {
-		//TODO : to change to standard Path
 		Settings.Builder elasticsearchSettings = Settings.settingsBuilder().put("cluster.name",
-				"locales").put("path.home","E:\\workspace\\matchp\\matchp-core");
+				matchpconfig.getEsClusterName()).put("path.home",matchpconfig.getEsPath());
 		Node node = nodeBuilder().local(true).settings(elasticsearchSettings.build()).node();
 
 		return node;
