@@ -8,7 +8,7 @@ import javax.ws.rs.core.Response;
 
 import cn.edu.xmu.gxj.matchp.constants.Constants;
 
-@Path("")
+@Path("query")
 public interface QueryAPI {
 
 	@GET

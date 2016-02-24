@@ -5,7 +5,7 @@ app.controller('queryForm',['$scope','$location','$resource',function($scope,$lo
   //$location.path("../result.html")
   $scope.search = function(){
     console.log("search is " + $scope.queryText);
-    var Entrys = $resource('/matchp-web/query?q=:text',{text:$scope.queryText});
+    var Entrys = $resource('/matchp-web/api/query?q=:text',{text:$scope.queryText});
 	var test  = Entrys.query(function(data){
 		console.log('the length is ', data.length)
 		$scope.results = data;

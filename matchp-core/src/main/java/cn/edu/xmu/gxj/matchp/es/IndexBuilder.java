@@ -42,13 +42,13 @@ public class IndexBuilder {
 	
 	@PostConstruct
 	public void init(){
-		try {
-			addDoc();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			addDoc();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (CloneNotSupportedException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	static String indexName = "matchp";
@@ -103,6 +103,30 @@ public class IndexBuilder {
 		c.close();
 	}
 
+	
+	public void addDoc(String json) throws IOException, CloneNotSupportedException {
+
+		// Add documents
+		Client c = geteasyClient();
+		IndexRequestBuilder indexRequestBuilder = c.prepareIndex(indexName, documentType);
+		// build json object
+		// XContentBuilder contentBuilder =
+		// jsonBuilder().startObject().prettyPrint();
+		// contentBuilder.field("name", "jai");
+		// contentBuilder.endObject();
+		// indexRequestBuilder.setSource(contentBuilder);
+
+		Gson gson = new Gson();
+		Weibo weibo = gson.fromJson(json, Weibo.class);
+		Weibo newWeibo = Weibo.build(weibo);
+
+		indexRequestBuilder.setSource(newWeibo.toMap());
+		IndexResponse response = indexRequestBuilder.execute().actionGet();
+		c.close();
+	}
+	
+	
+	
 	public void readDoc() {
 		// Get document according to id
 
@@ -136,6 +160,7 @@ public class IndexBuilder {
 	}
 
 	public static void main(String[] args) throws IOException, CloneNotSupportedException {
+		// TODO : add a indexbuild test case using mock.
 		String indexName = "";
 		// CreateIndexRequestBuilder builder =
 		// geteasyClient().admin().indices().prepareCreate(indexName);
