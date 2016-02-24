@@ -28,7 +28,7 @@ public class MatchpConfig {
 		try {
 			String filepath = getPath();
 			File configFile = new File(filepath);
-			if(!configFile.exists()){
+			if(!(configFile.exists()&&configFile.isFile())){
 				logger.info("reading config file {} not exists. using the default property",filepath);
 			}else{
 				logger.info("reading file from {}", filepath);
@@ -39,10 +39,8 @@ public class MatchpConfig {
 				configStream.close();
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -51,16 +49,14 @@ public class MatchpConfig {
 	}
 	
 	public String getPath(){
-        ClassLoader cl = ClassLoader.getSystemClassLoader();
-
-        URL[] urls = ((URLClassLoader)cl).getURLs();
-
-        for(URL url: urls){
-        	System.out.println(url.getFile());
-        }
 		URL url = getClass().getResource(configFileName);
-		logger.debug("the url path is {}",url.getPath());
-		return url.getPath();
+		if (null != url) {
+			logger.debug("the url path is {}", url.getPath());
+			return url.getPath();
+		}else {
+			logger.error("the url path is null, please check the url");
+			return "";
+		}
 	
 	}
 	
@@ -82,6 +78,7 @@ public class MatchpConfig {
 	public static void main(String[] args) throws FileNotFoundException, IOException{
 		MatchpConfig config = new MatchpConfig();
 		System.out.println(config.getEsClusterName());
+		System.out.println(config.getEsPath());
 		
 	}
 }

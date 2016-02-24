@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -30,10 +32,16 @@ import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
 @Component
 public class IndexBuilder {
+	
 	@Autowired
-	private static MatchpConfig matchpconfig;
+	private MatchpConfig matchpconfig;
 	
 	public IndexBuilder() {
+		// to be notice that autowired is after this method.
+	}
+	
+	@PostConstruct
+	public void init(){
 		try {
 			addDoc();
 		} catch (IOException e) {
@@ -54,7 +62,7 @@ public class IndexBuilder {
 			+ "\"like_no\": \"0\", "
 			+ "\"rt_no\": \"0\"}";
 
-	public static Client geteasyClient() {
+	public Client geteasyClient() {
 		// //Create Client
 		// Settings settings =
 		// ImmutableSettings.settingsBuilder().put("cluster.name",
@@ -66,7 +74,7 @@ public class IndexBuilder {
 		return getNode().client();
 	}
 
-	public static Node getNode() {
+	public Node getNode() {
 		Settings.Builder elasticsearchSettings = Settings.settingsBuilder().put("cluster.name",
 				matchpconfig.getEsClusterName()).put("path.home",matchpconfig.getEsPath());
 		Node node = nodeBuilder().local(true).settings(elasticsearchSettings.build()).node();
@@ -95,7 +103,7 @@ public class IndexBuilder {
 		c.close();
 	}
 
-	public static void readDoc() {
+	public void readDoc() {
 		// Get document according to id
 
 		GetRequestBuilder getRequestBuilder = geteasyClient().prepareGet(indexName, documentType, null);
