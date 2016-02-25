@@ -160,16 +160,7 @@ public class IndexBuilder {
 	}
 
 	public static void main(String[] args) throws IOException, CloneNotSupportedException {
-		// TODO : add a indexbuild test case using mock.
-		
-		String indexName = "";
-		// CreateIndexRequestBuilder builder =
-		// geteasyClient().admin().indices().prepareCreate(indexName);
-		IndexBuilder index = new IndexBuilder();
-//		index.addDoc();
-//		readDoc();
-		index.searchDoc("今天");
-
+		// check the test case.
 	}
 
 }
