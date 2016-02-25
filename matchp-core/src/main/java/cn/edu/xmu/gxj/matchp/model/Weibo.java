@@ -11,56 +11,81 @@ public class Weibo implements Cloneable{
 	}
 	
 	public Weibo(Map<String, Object> map){
-		this.comment_no = (String) map.get("comment_no");
+		this.comment_no =  (Integer) map.get("comment_no");
 		this.text = (String) map.get("text");
 		this.uid = (String) map.get("uid");
-		this.like_no = (String) map.get("like_no");
-		this.rt_no = (String) map.get("rt_no");
+		this.like_no = (Integer) map.get("like_no");
+		this.rt_no = (Integer) map.get("rt_no");
 		this.img_url = (String) map.get("img_url");
+		this.mid = (String) map.get("mid");
 	}
 	
-	private String comment_no;
+	private int comment_no;
 	private String text;
 	private String uid;
-	private String like_no;
-	private String rt_no;
+	private int like_no;
+	private int rt_no;
 	private String img_url;
-	public String getComment_no() {
+	private String mid;
+	
+	
+	public int getComment_no() {
 		return comment_no;
 	}
-	public void setComment_no(String comment_no) {
+
+	public void setComment_no(int comment_no) {
 		this.comment_no = comment_no;
 	}
+
 	public String getText() {
 		return text;
 	}
+
 	public void setText(String text) {
 		this.text = text;
 	}
+
 	public String getUid() {
 		return uid;
 	}
+
 	public void setUid(String uid) {
 		this.uid = uid;
 	}
-	public String getLike_no() {
+
+	public int getLike_no() {
 		return like_no;
 	}
-	public void setLike_no(String like_no) {
+
+	public void setLike_no(int like_no) {
 		this.like_no = like_no;
 	}
-	public String getRt_no() {
+
+	public int getRt_no() {
 		return rt_no;
 	}
-	public void setRt_no(String rt_no) {
+
+	public void setRt_no(int rt_no) {
 		this.rt_no = rt_no;
 	}
+
 	public String getImg_url() {
 		return img_url;
 	}
+
 	public void setImg_url(String img_url) {
 		this.img_url = img_url;
 	}
+
+	
+	public String getMid() {
+		return mid;
+	}
+
+	public void setMid(String mid) {
+		this.mid = mid;
+	}
+
 	@Override
 	public String toString() {
 		return "Weibo [comment_no=" + comment_no + ", text=" + text + ", uid=" + uid + ", like_no=" + like_no
@@ -95,6 +120,7 @@ public class Weibo implements Cloneable{
 		jsonDoc.put("rt_no", rt_no);
 		jsonDoc.put("text", text);
 		jsonDoc.put("uid", uid);
+		jsonDoc.put("mid",mid);
 		return jsonDoc;
 	}
 	

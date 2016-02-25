@@ -1,16 +1,22 @@
 package cn.edu.xmu.gxj.matchp.es;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.node.Node;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.reflect.TypeToken;
@@ -22,28 +28,41 @@ import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 @RunWith(MockitoJUnitRunner.class)
 public class IndexBuilderTest {
 
+	static String str = "{\"comment_no\": \"0\", "
+			+ "\"text\": \"tomorrow is another day . http://ww1.sinaimg.cn/wap128/a033dfefjw1efzm1oluakj20dc0hstae.jpg\", "
+			+ "\"uid\": \"2687754223\", "
+			+ "\"like_no\": \"0\", "
+			+ "\"rt_no\": \"0\",\"mid\":\"123456\"}";
+
+	
 	@Mock
 	MatchpConfig config;
 	
+	@Spy
+	Node node;
+	
 	@InjectMocks
 	IndexBuilder builder;
-	
 	
 	@Before
 	public void setUp(){
 		
 		when(config.getEsPath()).thenReturn("E:\\workspace\\matchp\\matchp-core");
 		when(config.getEsClusterName()).thenReturn("locales");
+		when(config.getEsInput()).thenReturn("D:\\guanxinjun_a\\weibo_text");
+		when(config.getEsBackup()).thenReturn("D:\\guanxinjun_a\\weibo_backup");
 	}
 	
 	@Test
-	public void test() {
+	public void addIndexAndQuery(){
+		//TODO : to fix the test case here
 		try {
-			builder.addDoc();
-			String ret = builder.searchDoc("今天");
+//			builder.addDoc(str);
+			String ret = builder.searchDoc("another");
 			TypeToken<List<Entry>> token = new TypeToken<List<Entry>>() {};
 			ArrayList<Entry> results = new Gson().fromJson(ret, token.getType());
-			System.out.println(results.size());
+			assertTrue(results.size() >= 1);
+			assertEquals(1, results.size(), 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

@@ -23,6 +23,8 @@ public class MatchpConfig {
 	
 	private final String esPath;
 	private final String esClusterName;
+	private final String esInput;
+	private final String esBackup;
 	
 	public MatchpConfig() {
 		try {
@@ -46,9 +48,11 @@ public class MatchpConfig {
 
 		this.esPath = configOrDefault("ES_PATH_HOME", "./");
 		this.esClusterName = configOrDefault("ES_CLUSTER_NAME", "locales");
+		this.esInput = configOrDefault("ES_INPUT", "D:\\guanxinjun_a\\weibo_text");
+		this.esBackup = configOrDefault("ES_BACKUP", "D:\\guanxinjun_a\\weibo_backup");
 	}
 	
-	public String getPath(){
+	private String getPath(){
 		URL url = getClass().getResource(configFileName);
 		if (null != url) {
 			logger.debug("the url path is {}", url.getPath());
@@ -60,7 +64,7 @@ public class MatchpConfig {
 	
 	}
 	
-	public static String configOrDefault(String key, String defaultValue){
+	private static String configOrDefault(String key, String defaultValue){
 		if(properties != null && properties.containsKey(key)){
 			return properties.getProperty(key);
 		}
@@ -75,6 +79,14 @@ public class MatchpConfig {
 		return esClusterName;
 	}
 	
+	public String getEsInput() {
+		return esInput;
+	}
+	
+	public String getEsBackup(){
+		return esBackup;
+	}
+
 	public static void main(String[] args) throws FileNotFoundException, IOException{
 		MatchpConfig config = new MatchpConfig();
 		System.out.println(config.getEsClusterName());

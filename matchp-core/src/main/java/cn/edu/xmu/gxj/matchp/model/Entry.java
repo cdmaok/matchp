@@ -25,5 +25,10 @@ public class Entry {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
+	@Override
+	public String toString() {
+		return "Entry [text=" + text + ", url=" + url + "]";
+	}
 	
 }

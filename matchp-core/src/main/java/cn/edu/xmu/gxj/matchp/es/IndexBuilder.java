@@ -2,12 +2,25 @@ package cn.edu.xmu.gxj.matchp.es;
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthAction;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -16,6 +29,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
@@ -36,33 +50,34 @@ public class IndexBuilder {
 	@Autowired
 	private MatchpConfig matchpconfig;
 	
+	private Node node;
+	
 	public IndexBuilder() {
-		// to be notice that autowired is after this method.
+		// to be noticed that autowired is after this method.
 	}
 	
 	@PostConstruct
 	public void init(){
-//		try {
-//			addDoc();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (CloneNotSupportedException e) {
-//			e.printStackTrace();
-//		}
+		Settings.Builder elasticsearchSettings = Settings.settingsBuilder().put("cluster.name",
+				matchpconfig.getEsClusterName()).put("path.home",matchpconfig.getEsPath());
+		node = nodeBuilder().local(true).settings(elasticsearchSettings.build()).node();
+		try {
+			Reindex();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	static String indexName = "matchp";
 	static String documentType = "weibo";
+	static String idField = "mid";
 	
 	static final Logger logger = LoggerFactory.getLogger(IndexBuilder.class);
 	
-	public static String str = "{\"comment_no\": \"0\", "
-			+ "\"text\": \"今天起来得早吧～我都出去一趟回来老。早起的鸟儿有虫吃[鼓掌][鼓掌]懒猪们 ，早安 [呲牙][太阳]http://ww1.sinaimg.cn/wap128/a033dfefjw1efzm1oluakj20dc0hstae.jpg\", "
-			+ "\"uid\": \"2687754223\", "
-			+ "\"like_no\": \"0\", "
-			+ "\"rt_no\": \"0\"}";
 
-	public Client geteasyClient() {
+	private Client geteasyClient() {
 		// //Create Client
 		// Settings settings =
 		// ImmutableSettings.settingsBuilder().put("cluster.name",
@@ -71,44 +86,35 @@ public class IndexBuilder {
 		// transportClient = transportClient.addTransportAddress(new
 		// InetSocketTransportAddress("localhost", 9300));
 		// return (Client) transportClient;
-		return getNode().client();
+		Client client = node.client();
+		TimeValue timeout = new TimeValue(1000);
+        ClusterHealthResponse healthResponse =
+                client.execute(ClusterHealthAction.INSTANCE, new ClusterHealthRequest().waitForStatus(ClusterHealthStatus.GREEN).timeout(timeout)).actionGet();
+		System.out.println(healthResponse.getStatus().name());
+        return node.client();
 	}
 
-	public Node getNode() {
-		Settings.Builder elasticsearchSettings = Settings.settingsBuilder().put("cluster.name",
-				matchpconfig.getEsClusterName()).put("path.home",matchpconfig.getEsPath());
-		Node node = nodeBuilder().local(true).settings(elasticsearchSettings.build()).node();
 
-		return node;
+	private void Reindex() throws IOException, CloneNotSupportedException{
+		File dir = new File(matchpconfig.getEsPath());
+		if (dir.exists() && dir.isDirectory()) {
+			return;
+		}else {
+			logger.info("reconstruct index ...");
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(matchpconfig.getEsInput())), "utf-8"));
+			String line = "";
+			while ((line = bufferedReader.readLine()) != null) {
+				addDoc(line);
+			}
+			bufferedReader.close();
+		}
 	}
-
-	public void addDoc() throws IOException, CloneNotSupportedException {
-
-		// Add documents
-		Client c = geteasyClient();
-		IndexRequestBuilder indexRequestBuilder = c.prepareIndex(indexName, documentType);
-		// build json object
-		// XContentBuilder contentBuilder =
-		// jsonBuilder().startObject().prettyPrint();
-		// contentBuilder.field("name", "jai");
-		// contentBuilder.endObject();
-		// indexRequestBuilder.setSource(contentBuilder);
-
-		Gson gson = new Gson();
-		Weibo weibo = gson.fromJson(str, Weibo.class);
-		Weibo newWeibo = Weibo.build(weibo);
-
-		indexRequestBuilder.setSource(newWeibo.toMap());
-		IndexResponse response = indexRequestBuilder.execute().actionGet();
-		c.close();
-	}
-
 	
 	public void addDoc(String json) throws IOException, CloneNotSupportedException {
 
 		// Add documents
 		Client c = geteasyClient();
-		IndexRequestBuilder indexRequestBuilder = c.prepareIndex(indexName, documentType);
+
 		// build json object
 		// XContentBuilder contentBuilder =
 		// jsonBuilder().startObject().prettyPrint();
@@ -119,9 +125,12 @@ public class IndexBuilder {
 		Gson gson = new Gson();
 		Weibo weibo = gson.fromJson(json, Weibo.class);
 		Weibo newWeibo = Weibo.build(weibo);
-
+		IndexRequestBuilder indexRequestBuilder = c.prepareIndex(indexName, documentType,newWeibo.getMid());
 		indexRequestBuilder.setSource(newWeibo.toMap());
 		IndexResponse response = indexRequestBuilder.execute().actionGet();
+		BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(matchpconfig.getEsBackup()),true), "utf-8"));
+		bufferedWriter.write(json + "\r\n");
+		bufferedWriter.close();
 		c.close();
 	}
 	
@@ -144,7 +153,7 @@ public class IndexBuilder {
 		.setQuery(QueryBuilders.matchQuery("text", query)).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 
 		SearchHit[] results = response.getHits().getHits();
-		logger.info("Current results: {}" + results.length );
+		logger.info("Current results: {}" , results.length );
 		ArrayList<Entry> resultList = new ArrayList<Entry>();
 		for (SearchHit hit : results) {
 			System.out.println("------------------------------");
