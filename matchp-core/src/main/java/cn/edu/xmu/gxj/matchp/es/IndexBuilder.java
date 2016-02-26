@@ -16,11 +16,13 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.swing.RepaintManager;
 
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthAction;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
+import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -33,6 +35,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.search.SearchHit;
+import org.jboss.resteasy.plugins.providers.jaxb.json.JsonParsing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,14 +61,12 @@ public class IndexBuilder {
 	
 	@PostConstruct
 	public void init(){
-		Settings.Builder elasticsearchSettings = Settings.settingsBuilder().put("cluster.name",
-				matchpconfig.getEsClusterName()).put("path.home",matchpconfig.getEsPath());
-		node = nodeBuilder().local(true).settings(elasticsearchSettings.build()).node();
 		try {
+			Settings.Builder elasticsearchSettings = Settings.settingsBuilder().put("cluster.name",
+					matchpconfig.getEsClusterName()).put("path.home",matchpconfig.getEsPath());
+			node = nodeBuilder().local(true).settings(elasticsearchSettings.build()).node();
 			Reindex();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (CloneNotSupportedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -87,26 +88,51 @@ public class IndexBuilder {
 		// InetSocketTransportAddress("localhost", 9300));
 		// return (Client) transportClient;
 		Client client = node.client();
-		TimeValue timeout = new TimeValue(1000);
-        ClusterHealthResponse healthResponse =
-                client.execute(ClusterHealthAction.INSTANCE, new ClusterHealthRequest().waitForStatus(ClusterHealthStatus.GREEN).timeout(timeout)).actionGet();
-		System.out.println(healthResponse.getStatus().name());
-        return node.client();
+		
+//      client wait for green status.		
+		TimeValue timeout = new TimeValue(matchpconfig.getEsTimeout());
+		ClusterHealthResponse healthResponse = client.execute(ClusterHealthAction.INSTANCE,
+				new ClusterHealthRequest().waitForStatus(ClusterHealthStatus.GREEN).timeout(timeout)).actionGet();
+		
+		if (healthResponse.isTimedOut() && healthResponse.getStatus().name().equals(ClusterHealthStatus.RED.name())) {
+			// we always get yellow status. it's normal for es always have one replication but we only have one node. 
+			logger.error("time out waiting for green status. now is {}" , healthResponse.getStatus().name());
+			return null;
+		}
+		
+
+//		int time = 0;
+//        while (time < 50) {
+//			ClusterHealthResponse healthResponse = client
+//					.execute(ClusterHealthAction.INSTANCE,
+//							new ClusterHealthRequest().waitForStatus(ClusterHealthStatus.GREEN).timeout(timeout))
+//					.actionGet();
+//			System.out.println(healthResponse.getStatus().name());
+//			time ++;
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+		return node.client();
 	}
 
 
 	private void Reindex() throws IOException, CloneNotSupportedException{
-		File dir = new File(matchpconfig.getEsPath());
-		if (dir.exists() && dir.isDirectory()) {
+		
+		Client client = geteasyClient();
+		
+		IndicesExistsResponse response = client.admin().indices().prepareExists(indexName).get();
+		
+		client.close();
+
+		if (response.isExists()) {
+			logger.info("index already existed.");
 			return;
 		}else {
-			logger.info("reconstruct index ...");
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(matchpconfig.getEsInput())), "utf-8"));
-			String line = "";
-			while ((line = bufferedReader.readLine()) != null) {
-				addDoc(line);
-			}
-			bufferedReader.close();
+			addDocbyBatch(matchpconfig.getEsBackup());
 		}
 	}
 	
@@ -131,6 +157,37 @@ public class IndexBuilder {
 		BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(matchpconfig.getEsBackup()),true), "utf-8"));
 		bufferedWriter.write(json + "\r\n");
 		bufferedWriter.close();
+		c.close();
+	}
+	
+	public void addDocbyBatch(String FileName) throws IOException, CloneNotSupportedException {
+
+		// Add documents
+		Client c = geteasyClient();
+
+		// build json object
+		// XContentBuilder contentBuilder =
+		// jsonBuilder().startObject().prettyPrint();
+		// contentBuilder.field("name", "jai");
+		// contentBuilder.endObject();
+		// indexRequestBuilder.setSource(contentBuilder);
+		
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(FileName)), "utf-8"));
+		String json;
+
+		while ((json = bufferedReader.readLine()) != null) {
+			if (json.trim().equals("")) {
+				continue;
+			}
+			Gson gson = new Gson();
+			logger.debug(json);
+			Weibo weibo = gson.fromJson(json, Weibo.class);
+			Weibo newWeibo = Weibo.build(weibo);
+			IndexRequestBuilder indexRequestBuilder = c.prepareIndex(indexName, documentType, newWeibo.getMid());
+			indexRequestBuilder.setSource(newWeibo.toMap());
+			IndexResponse response = indexRequestBuilder.execute().actionGet();
+		}
+		bufferedReader.close();
 		c.close();
 	}
 	
@@ -166,10 +223,6 @@ public class IndexBuilder {
 		}
 		c.close();
 		return new Gson().toJson(resultList);
-	}
-
-	public static void main(String[] args) throws IOException, CloneNotSupportedException {
-		// check the test case.
 	}
 
 }

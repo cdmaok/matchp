@@ -10,7 +10,8 @@
       <pattern>%msg%n</pattern>
     </encoder>
   </appender>
-  <logger name="org.springframework.context.annotation" level = "DEBUG"/>
+  <logger name="org.springframework.context.annotation" level = "INFO"/>
+  <logger name="org.elasticsearch" level = "INFO"/>
   <root level="DEBUG">
     <appender-ref ref="FILE" />
     <appender-ref ref="STDOUT" />
