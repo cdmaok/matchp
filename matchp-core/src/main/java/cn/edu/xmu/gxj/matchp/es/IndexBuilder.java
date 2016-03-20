@@ -172,7 +172,12 @@ public class IndexBuilder {
 		// contentBuilder.endObject();
 		// indexRequestBuilder.setSource(contentBuilder);
 
-		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(FileName)), "utf-8"));
+		File backup = new File(FileName);
+		if(!backup.exists()){
+			logger.info("{} not exists, you may first deploy", FileName);
+		}
+		
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(backup), "utf-8"));
 		String json;
 
 		while ((json = bufferedReader.readLine()) != null) {
