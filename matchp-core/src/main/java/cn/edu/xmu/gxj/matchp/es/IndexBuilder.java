@@ -91,7 +91,7 @@ public class IndexBuilder {
         ClusterHealthResponse healthResponse =
                 client.execute(ClusterHealthAction.INSTANCE, new ClusterHealthRequest().waitForStatus(ClusterHealthStatus.GREEN).timeout(timeout)).actionGet();
 		System.out.println(healthResponse.getStatus().name());
-        return node.client();
+        return client;
 	}
 
 
