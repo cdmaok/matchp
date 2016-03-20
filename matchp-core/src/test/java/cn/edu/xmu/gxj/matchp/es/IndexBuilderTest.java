@@ -38,9 +38,6 @@ public class IndexBuilderTest {
 	@Mock
 	MatchpConfig config;
 	
-	@Spy
-	Node node;
-	
 	@InjectMocks
 	IndexBuilder builder;
 	
@@ -49,15 +46,16 @@ public class IndexBuilderTest {
 		
 		when(config.getEsPath()).thenReturn("E:\\workspace\\matchp\\matchp-core");
 		when(config.getEsClusterName()).thenReturn("locales");
-		when(config.getEsInput()).thenReturn("D:\\guanxinjun_a\\weibo_text");
 		when(config.getEsBackup()).thenReturn("D:\\guanxinjun_a\\weibo_backup");
+		when(config.getEsTimeout()).thenReturn(5000L);
+		builder.init();
 	}
 	
 	@Test
 	public void addIndexAndQuery(){
-		//TODO : to fix the test case here
+
 		try {
-//			builder.addDoc(str);
+			builder.addDoc(str);
 			String ret = builder.searchDoc("another");
 			TypeToken<List<Entry>> token = new TypeToken<List<Entry>>() {};
 			ArrayList<Entry> results = new Gson().fromJson(ret, token.getType());
@@ -68,5 +66,6 @@ public class IndexBuilderTest {
 			fail(e.getMessage());
 		} 
 	}
+	
 
 }

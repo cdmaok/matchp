@@ -23,8 +23,8 @@ public class MatchpConfig {
 	
 	private final String esPath;
 	private final String esClusterName;
-	private final String esInput;
 	private final String esBackup;
+	private final long esTimeout;
 	
 	public MatchpConfig() {
 		try {
@@ -48,8 +48,8 @@ public class MatchpConfig {
 
 		this.esPath = configOrDefault("ES_PATH_HOME", "./");
 		this.esClusterName = configOrDefault("ES_CLUSTER_NAME", "locales");
-		this.esInput = configOrDefault("ES_INPUT", "D:\\guanxinjun_a\\weibo_text");
 		this.esBackup = configOrDefault("ES_BACKUP", "D:\\guanxinjun_a\\weibo_backup");
+		this.esTimeout = Long.parseLong(configOrDefault("ES_TIMEOUT", "5000"));
 	}
 	
 	private String getPath(){
@@ -79,12 +79,12 @@ public class MatchpConfig {
 		return esClusterName;
 	}
 	
-	public String getEsInput() {
-		return esInput;
-	}
-	
 	public String getEsBackup(){
 		return esBackup;
+	}
+	
+	public long getEsTimeout(){
+		return esTimeout;
 	}
 
 	public static void main(String[] args) throws FileNotFoundException, IOException{
