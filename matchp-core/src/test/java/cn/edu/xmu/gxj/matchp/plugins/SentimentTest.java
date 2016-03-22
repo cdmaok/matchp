@@ -65,14 +65,40 @@ public class SentimentTest {
 	  }
 	  
 	public void value(CoreMap sentence){
-	    Tree tree = sentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
-        Tree copy = tree.deepCopy();
-        setIndexLabels(copy, 0);
-        outputTreeScores(tree, 0);
+//	    Tree tree = sentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
+//        Tree copy = tree.deepCopy();
+//        setIndexLabels(copy, 0);
+//        outputTreeScores(tree, 0);
+		System.out.println(sentence.toShorterString());
         System.out.println("  " + sentence.get(SentimentCoreAnnotations.SentimentClass.class));
-        setSentimentLabels(copy);
-        System.out.println(copy);
+//        setSentimentLabels(copy);
+//        System.out.println(copy);
+//        
+//        setIndexLabels(copy, 0);
+//        outputTreeVectors(tree, 0);
 	}
+	
+	  /**
+	   * Outputs the vectors from the tree.  Counts the tree nodes the
+	   * same as setIndexLabels.
+	   */
+	  static int outputTreeVectors(Tree tree, int index) {
+	    if (tree.isLeaf()) {
+	      return index;
+	    }
+	    PrintStream out = System.out;
+	    out.print("  " + index + ":");
+	    SimpleMatrix vector = RNNCoreAnnotations.getNodeVector(tree);
+	    for (int i = 0; i < vector.getNumElements(); ++i) {
+	      out.print("  " + NF.format(vector.get(i)));
+	    }
+	    out.println();
+	    index++;
+	    for (Tree child : tree.children()) {
+	      index = outputTreeVectors(child, index);
+	    }
+	    return index;
+	  }
 	
 	  /**
 	   * Sets the labels on the tree (except the leaves) to be the integer
@@ -98,23 +124,38 @@ public class SentimentTest {
 
 	@Test
 	public void test() {
+		getSentiment("wtf, i am sad");
+		getSentiment("wtf, i am happy");
+		getSentiment("holy shit, i am totally happy");
+		getSentiment("怎么办，好开心。");
+	}
+	
+	public void getSentiment(String line){
+
 		Properties pipelineProps = new Properties();
 		Properties tokenizerProps = null;
 		// pipelineProps.setProperty("sentiment.model", "xxx");
 		// pipelineProps.setProperty("parse.model", "xxx");
+
+
 		pipelineProps.setProperty("annotators", "parse, sentiment");
 		pipelineProps.setProperty("enforceRequirements", "false");
 		tokenizerProps = new Properties();
-		tokenizerProps.setProperty("annotators", "tokenize, ssplit");
+		tokenizerProps.setProperty("annotators", "tokenize,ssplit,parse,sentiment");
 		tokenizerProps.setProperty(StanfordCoreNLP.NEWLINE_SPLITTER_PROPERTY, "true");
+		tokenizerProps.setProperty("customAnnotatorClass.segment","edu.stanford.nlp.pipeline.ChineseSegmenterAnnotator");
+		tokenizerProps.setProperty("parse.model","edu/stanford/nlp/models/lexparser/chinesePCFG.ser.gz");
 		StanfordCoreNLP tokenizer = (tokenizerProps == null) ? null : new StanfordCoreNLP(tokenizerProps);
 		StanfordCoreNLP pipeline = new StanfordCoreNLP(pipelineProps);
-		String line = "卧槽，真是难过。";
 		Annotation annotation = tokenizer.process(line);
-		pipeline.annotate(annotation);
+//		pipeline.annotate(annotation);
 		for (CoreMap sentence : annotation.get(CoreAnnotations.SentencesAnnotation.class)) {
 			value(sentence);
+            Tree tree = sentence.get(SentimentCoreAnnotations.SentimentAnnotatedTree.class);
+            int sentiment = RNNCoreAnnotations.getPredictedClass(tree);
+            System.out.println(sentiment);
 		}
+	
 	}
 
 }
