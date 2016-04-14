@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MatchP</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+    <header>
+        <h1>MatchP - cdmaok</h1>
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="user-input">
+                    <textarea name="query-text" id="query-text" cols="30" rows="10"></textarea>
+                    <br />
+                    <button id="submit" class="btn">SEARCH</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 result">
+                <h1>Total Result: <span id="result-count">0</span></h1>
+                <div id="imgs-container">
+                </div>
+                <div id="pager" class="pager"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
