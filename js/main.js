@@ -9,6 +9,7 @@ $(function() {
   var pageIndex    = 0; // current page index
   var totalData    = [];
   var $imgs        = [];
+  var $result      = $('#result-container');
   var $preBtn      = $('#pre-btn');
   var $nxtBtn      = $('#nxt-btn');
   var $pageIndex   = $('#cur-page-index');
@@ -52,6 +53,7 @@ $(function() {
   });
 
   function resultHandler() {
+    $result.removeClass('hidden');
     $resultCount.text(totalData.length);
     $pageNum.text(Math.ceil(totalData.length / imgsRow / imgsCol));
 
