@@ -44,9 +44,8 @@ public class IndexBuilderTest {
 	@Before
 	public void setUp(){
 		
-		when(config.getEsPath()).thenReturn("E:\\workspace\\matchp\\matchp-core");
-		when(config.getEsClusterName()).thenReturn("locales");
-		when(config.getEsBackup()).thenReturn("D:\\guanxinjun_a\\weibo_backup");
+		when(config.getEsClusterName()).thenReturn("elasticsearch");
+		when(config.getEsHostName()).thenReturn("114.215.99.92");
 		when(config.getEsTimeout()).thenReturn(5000L);
 		builder.init();
 	}

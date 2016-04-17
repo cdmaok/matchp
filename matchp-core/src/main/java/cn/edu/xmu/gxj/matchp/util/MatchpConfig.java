@@ -21,9 +21,8 @@ public class MatchpConfig {
 	private static Properties properties;
 	private static final String configFileName = "/config.properties";
 	
-	private final String esPath;
 	private final String esClusterName;
-	private final String esBackup;
+	private final String esHostName;
 	private final long esTimeout;
 	
 	public MatchpConfig() {
@@ -46,10 +45,9 @@ public class MatchpConfig {
 			e.printStackTrace();
 		}
 
-		this.esPath = configOrDefault("ES_PATH_HOME", "./");
 		this.esClusterName = configOrDefault("ES_CLUSTER_NAME", "locales");
-		this.esBackup = configOrDefault("ES_BACKUP", "D:\\guanxinjun_a\\weibo_backup");
 		this.esTimeout = Long.parseLong(configOrDefault("ES_TIMEOUT", "5000"));
+		this.esHostName = configOrDefault("ES_HOESTNAME", "localhost");
 	}
 	
 	private String getPath(){
@@ -71,26 +69,26 @@ public class MatchpConfig {
 		return defaultValue;
 	}
 
-	public String getEsPath() {
-		return esPath;
-	}
 
 	public String getEsClusterName() {
 		return esClusterName;
 	}
 	
-	public String getEsBackup(){
-		return esBackup;
-	}
+
 	
 	public long getEsTimeout(){
 		return esTimeout;
+	}
+	
+	
+
+	public String getEsHostName() {
+		return esHostName;
 	}
 
 	public static void main(String[] args) throws FileNotFoundException, IOException{
 		MatchpConfig config = new MatchpConfig();
 		System.out.println(config.getEsClusterName());
-		System.out.println(config.getEsPath());
 		
 	}
 }
