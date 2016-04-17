@@ -15,20 +15,29 @@
     </header>
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
-                <div class="user-input">
-                    <textarea name="query-text" id="query-text" cols="30" rows="10"></textarea>
-                    <br />
-                    <button id="submit" class="btn">SEARCH</button>
-                </div>
+            <div class="col-md-8 col-md-offset-2">
+                <form role="form">
+                    <div class="form-group">
+                        <label for="query-text">Please input your tweets:</label>
+                        <textarea name="query-text" id="query-text" cols="30" rows="5" class="form-control"></textarea>
+                    </div>
+                    <button id="submit" type="submit" class="btn btn-primary btn-lg btn-block">S E A R C H</button>
+                </form>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12 result">
-                <h1>Total Result: <span id="result-count">0</span></h1>
+        <div class="row result-container">
+            <div class="col-md-8 col-md-offset-2">
+                <p class="total-result">Total Result: <span id="result-count">0</span></p>
                 <div id="imgs-container">
                 </div>
-                <div id="pager" class="pager"></div>
+                <div id="pager" class="pager hidden">
+                    <button id="pre-btn" class="btn btn-default" disabled="disabled">&#x25c0;</button>
+                    <span>
+                        <span id="cur-page-index">1</span> / 
+                        <span id="total-page-num">1</span>
+                    </span>
+                    <button id="nxt-btn" class="btn btn-default" disabled="disabled">&#x25ba;</button>
+                </div>
             </div>
         </div>
     </div>
