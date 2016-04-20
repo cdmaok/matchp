@@ -36,8 +36,9 @@ header h1 {
     transition: all .2s;
 }
 .img-wrapper:hover {
+    z-index: 2;
     box-shadow: 0 0 10px #777;
-    transform: scale(1.05);
+    transform: scale(1.5);
 }
 .img-wrapper span {
     display: table-cell;
