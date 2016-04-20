@@ -1,114 +1,143 @@
 $(function() {
   // global settings
-  var queryServer = 'http://114.215.99.92:8080/matchp-web/api/query?q=%E4%BB%8A%E5%A4%A9';
-  var imgsRow     = 5;
-  var imgsCol     = 4;
+  var options = {
+    queryServer: 'http://114.215.99.92:8080/matchp-web/api/',
+    imgsRow: 5,
+    imgsCol: 4
+  }
 
   // global variables
-  var pageNum      = 0; // total page number
-  var pageIndex    = 0; // current page index
-  var totalData    = [];
-  var $imgs        = [];
-  var $result      = $('#result-container');
-  var $preBtn      = $('#pre-btn');
-  var $nxtBtn      = $('#nxt-btn');
-  var $pageIndex   = $('#cur-page-index');
-  var $pageNum     = $('#total-page-num');
-  var $queryText   = $('#query-test');
-  var $resultCount = $('#result-count');
+  var gPageNum      = 0; // total page number
+  var gTotalData    = []; // the total data from server
 
-  // Search button clicked
+  // jquery DOM objects
+  var $imgsPages     = [];
+  var $result        = $('#result-container');
+  var $imgsContainer = $('#imgs-container');
+  var $pager         = $('#pager');
+  var $preBtn        = $('#pre-btn');
+  var $nxtBtn        = $('#nxt-btn');
+  var $pageIndex     = $('#cur-page-index');
+  var $pageNum       = $('#total-page-num');
+  var $queryText     = $('#query-text');
+  var $resultCount   = $('#result-count');
+
+  $.support.cors = true;
+
+  // bind UI element events
   $('#submit').on('click', function(e) {
     e.preventDefault();
     this.disabled = 'disabled'; // disable submit button while fetching data from server
 
     var that = this;
     var queryText = $queryText.val();
-    var queryUrl = queryServer + 'query?q=' + queryText;
+    var queryUrl = options.queryServer + 'query?q=' + queryText;
 
     $.ajax({
       url: queryUrl,
       dataType: 'json',
       type: 'get',
       success: function(data) {
-        totalData = data;
-        resultHandler();
+        resultHandler(data);
         that.disabled = '';
       },
       error: function(xhr, status, err) {
         console.error(queryUrl, status, err.toString());
+        alert('Failed to fetch data from server...Orz');
         that.disabled = '';
       }
     });
   });
 
   $preBtn.on('click', function() {
-    showImgs(--pageIndex);
-    $pageIndex.text(pageIndex + 1);
+    var curIndex = +$pageIndex.text() - 1;
+    $pageIndex.text(--curIndex + 1);
+    showImgsPage(curIndex, -1);
   });
 
   $nxtBtn.on('click', function() {
-    showImgs(++pageIndex);
-    $pageIndex.text(pageIndex + 1);
+    var curIndex = +$pageIndex.text() - 1;
+    $pageIndex.text(++curIndex + 1);
+    showImgsPage(curIndex, 1);
   });
 
-  function resultHandler() {
+  // ajax success resultHandler
+  function resultHandler(data) {
+
+    // init data for rendering
+    gTotalData = data;
+    $imgsPages = [];
+    $imgsContainer.html('');
+
     $result.removeClass('hidden');
-    $resultCount.text(totalData.length);
-    $pageNum.text(Math.ceil(totalData.length / imgsRow / imgsCol));
+    $resultCount.text(gTotalData.length);
 
-    if (!$imgs.length) {
-      initImgsContainer('#imgs-container');
-      $('#pager').removeClass('hidden');
+    gPageNum = (Math.ceil(gTotalData.length / options.imgsRow / options.imgsCol));
+    if (gPageNum > 1) {
+      $pager.removeClass('hidden');
+      $pageNum.text((Math.ceil(gTotalData.length / options.imgsRow / options.imgsCol)));
     }
 
-    showImgs(0);
+    showImgsPage(0, 0);
   }
 
-  function showImgs(page) {
-    var index = page * imgsRow * imgsCol;
+  function showImgsPage(pageIndex, delta) {
+    var $curPage = $imgsPages[pageIndex] || renderPage(pageIndex);
 
-    for (var i = 0; i < imgsRow; i++) {
-      for (var j = 0; j < imgsCol; j++) {
-        if (totalData[index]) {
-          $imgs[i][j].attr({
-            src: totalData[index].url,
-            alt: totalData[index].text,
-            title: totalData[index].text
-          });
-          index++;
-        }
-        else {
-          $imgs[i][j].replaceWith('');
-        }
-      }
+    if (delta > 0) {  // next page
+      $imgsPages[pageIndex - 1].hide();
+    } else if (delta < 0) { // previous page
+      $imgsPages[pageIndex + 1].hide();
     }
+    $curPage.show();
 
-    $preBtn.attr({
-      disabled: page ? null : 'disabled'
-    });
-    $nxtBtn.attr({
-      disabled: (totalData.length > index) ? null : 'disabled'
-    });
+    if (!$pager.hasClass('hidden')) {
+      $preBtn.attr({
+        disabled: pageIndex ? null : 'disabled'
+      });
+      $nxtBtn.attr({
+        disabled: (pageIndex === gPageNum - 1) ? 'disabled' : null
+      });
+    }
   }
 
-  // Render images container
-  function initImgsContainer(container) {
-    var $imgsContainer = $(container);
-    var $imgsFrag = $('<div></div>');
+  // Render a page of images
+  function renderPage(pageIndex) {
+    var $page = $('<div></div>').attr({
+      'id': 'imgs-page-' + pageIndex, 
+      'class': 'container-fluid imgs-page'
+    });
+    var index = pageIndex * options.imgsRow * options.imgsCol;
+    var imgWrapperSize = Math.floor(80 / options.imgsCol) + '%';
+    var imgWrapperMargin = Math.floor(20 / options.imgsCol / 2) + '%';
 
-    for (var i = 0; i < imgsRow; i++) {
-      $imgs[i] = [];
-      for (var j = 0; j < imgsCol; j++) {
-        $imgs[i][j] = $('<img></img>').on('error', function() { // in case of image not found
-          $(this).replaceWith("<span>Image Not Found!</span>");
+    for (var i = 0; i < options.imgsRow && gTotalData[index]; i++) {
+      var $row = $('<div></div>').addClass('row');
+      for (var j = 0; j < options.imgsCol && gTotalData[index]; j++) {
+        var $imgWrapper = $('<div></div>').attr({
+          class: 'img-wrapper',
+          style: ['width:' + imgWrapperSize, 
+                  'padding-top:' + imgWrapperSize, 
+                  'margin:' + imgWrapperMargin].join(';')
         });
-        $imgsFrag.append($imgs[i][j]);
-        $imgs[i][j].wrap('<div class="img-wrapper"></div>');
+        var $img = $('<img />').attr({
+          src: gTotalData[index].url, 
+          title: gTotalData[index].text, 
+          alt: gTotalData[index].text
+          })
+          .addClass('img-content')
+          .on('error', function() { // in case of image not found
+            this.src = './imgs/default.png';
+            this.onerror = null; // in case of error loop
+          });
+        $row.append($imgWrapper.append($img));
+        index++;
       }
-      $imgsFrag.append($('<br class="clear" />'));
+      $page.append($row);
     }
 
-    $imgsContainer.append($imgsFrag);
+    $imgsPages[pageIndex] = $page;
+    $imgsContainer.append($page);
+    return $page;
   }
 });
