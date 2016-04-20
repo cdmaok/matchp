@@ -26,7 +26,8 @@ public class QueryImpl implements QueryAPI{
 	public Response QueryShortText(String queryText) {
 		logger.info("query is {}",queryText);
 		String ret = indexBuilder.searchDoc(queryText);
-		return Response.ok().entity(ret).build();
+		// cors
+		return Response.ok().entity(ret).header("Access-Control-Allow-Origin", "*").build();
 	}
 
 }

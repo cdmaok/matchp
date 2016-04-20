@@ -33,6 +33,11 @@ public class IndexBuilderTest {
 			+ "\"uid\": \"2687754223\", "
 			+ "\"like_no\": \"0\", "
 			+ "\"rt_no\": \"0\",\"mid\":\"123456\"}";
+	
+	static String chineStr = "{\"rt_no\": \"0\", "
+			+ "\"like_no\": \"0\", \"text\": "
+			+ "\"好久没有主持过全场婚礼了>，虚脱http://ww1.sinaimg.cn/wap128/83a4f8cdjw1eg09yxmlrjj20x718gn9k.jpg\","
+			+ " \"mid\": \"3705901208373296\", \"comment_no\": \"0\", \"uid\": \"2208626893\"}";
 
 	
 	@Mock
@@ -45,7 +50,7 @@ public class IndexBuilderTest {
 	public void setUp(){
 		
 		when(config.getEsClusterName()).thenReturn("elasticsearch");
-		when(config.getEsHostName()).thenReturn("114.215.99.92");
+		when(config.getEsHostName()).thenReturn("127.0.0.1");
 		when(config.getEsTimeout()).thenReturn(5000L);
 		builder.init();
 	}
@@ -60,6 +65,25 @@ public class IndexBuilderTest {
 			ArrayList<Entry> results = new Gson().fromJson(ret, token.getType());
 			assertTrue(results.size() >= 1);
 			assertEquals(1, results.size(), 0);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		} 
+	}
+	
+	
+	@Test
+	public void addChineseIndexAndQuery(){
+
+		try {
+			builder.addDoc(chineStr);
+			String ret = builder.searchDoc("好久 主持");
+			TypeToken<List<Entry>> token = new TypeToken<List<Entry>>() {};
+			ArrayList<Entry> results = new Gson().fromJson(ret, token.getType());
+			assertTrue(results.size() >= 1);
+			assertEquals(1, results.size(), 0);
+			System.out.println(results.get(0));
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
