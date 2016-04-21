@@ -13,7 +13,7 @@ $(function() {
   var $nxtBtn      = $('#nxt-btn');
   var $pageIndex   = $('#cur-page-index');
   var $pageNum     = $('#total-page-num');
-  var $queryText   = $('#query-test');
+  var $queryText   = $('#query-text');
   var $resultCount = $('#result-count');
 
   // Search button clicked
