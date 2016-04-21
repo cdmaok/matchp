@@ -104,9 +104,10 @@ public class Weibo implements Cloneable{
 		}else{
 			Weibo newWeibo = (Weibo) origin.clone();
 			String text = newWeibo.getText();
-			Pattern p = Pattern.compile("http://(.*?).(jpg|gif|png|jpeg)");
+			//TODO: this is so low we need to improve it later.
+			Pattern p = Pattern.compile("http://[^:]*.(jpg|gif|png|jpeg)");
 			Matcher m = p.matcher(text);
-			if(m.find()){
+			while(m.find()){
 				String img_url = m.group(0);
 				// somethimes gets wrong case like "http://t.cn/8FnP0Mnhttp://ww1.sinaimg.cn/wap128/6b63135ajw1edtthpmwb9j20z00z0kbx.jpg"
 				String short_text = text.replace(img_url, "");

@@ -4,12 +4,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MatchTest {
-
 	public static void main(String[] args) {
 
-		String text = "http://xx http://abc.jpg";
+//		String text = "abchttp://ww1.sinaimg.cn/wap128/a033dfefjw1efzm1oluakj20dc0hstae.jpg";
+		String text = "htpp://abcdhttp://www1.cn/abc.jpg";
 		
-		Pattern pattern = Pattern.compile("http://[^(http://)]*jpg");
+		Pattern pattern = Pattern.compile("http://[^:]*.(jpg)");
 		
 		Matcher matcher = pattern.matcher(text);
 		
@@ -22,5 +22,4 @@ public class MatchTest {
 //		matcher.find(start + 1);
 //		System.out.println(matcher.group());
 	}
-
 }

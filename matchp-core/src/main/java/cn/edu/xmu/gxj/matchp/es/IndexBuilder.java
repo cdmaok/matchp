@@ -29,6 +29,8 @@ import com.google.gson.Gson;
 
 import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.model.Weibo;
+import cn.edu.xmu.gxj.matchp.util.ErrCode;
+import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
 @Component
@@ -71,7 +73,7 @@ public class IndexBuilder {
 	static final Logger logger = LoggerFactory.getLogger(IndexBuilder.class);
 
 
-	public void addDoc(String json) throws IOException, CloneNotSupportedException {
+	public void addDoc(String json) throws IOException, CloneNotSupportedException, MPException {
 
 		Client client = getClient();
 		// build json object
@@ -84,6 +86,11 @@ public class IndexBuilder {
 		Gson gson = new Gson();
 		Weibo weibo = gson.fromJson(json, Weibo.class);
 		Weibo newWeibo = Weibo.build(weibo);
+		
+		if(newWeibo.isNotFound()){
+			throw new MPException(ErrCode.Image_Not_Found, "Image Not found.");
+		}
+		
 		IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, documentType,newWeibo.getMid());
 		indexRequestBuilder.setSource(newWeibo.toMap());
 		IndexResponse response = indexRequestBuilder.execute().actionGet();
