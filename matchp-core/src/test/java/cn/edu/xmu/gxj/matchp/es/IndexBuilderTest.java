@@ -82,7 +82,6 @@ public class IndexBuilderTest {
 			TypeToken<List<Entry>> token = new TypeToken<List<Entry>>() {};
 			ArrayList<Entry> results = new Gson().fromJson(ret, token.getType());
 			assertTrue(results.size() >= 1);
-			assertEquals(1, results.size(), 0);
 			System.out.println(results.get(0));
 		} catch (Exception e) {
 			e.printStackTrace();

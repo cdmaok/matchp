@@ -5,6 +5,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+
+
 public class Weibo implements Cloneable{
 	
 	private Weibo() {
@@ -98,10 +104,11 @@ public class Weibo implements Cloneable{
 		}else{
 			Weibo newWeibo = (Weibo) origin.clone();
 			String text = newWeibo.getText();
-			Pattern p = Pattern.compile("http://.*[(.jpg)|(.png)]");
+			Pattern p = Pattern.compile("http://(.*?).(jpg|gif|png|jpeg)");
 			Matcher m = p.matcher(text);
 			if(m.find()){
 				String img_url = m.group(0);
+				// somethimes gets wrong case like "http://t.cn/8FnP0Mnhttp://ww1.sinaimg.cn/wap128/6b63135ajw1edtthpmwb9j20z00z0kbx.jpg"
 				String short_text = text.replace(img_url, "");
 				newWeibo.setImg_url(img_url);
 				newWeibo.setText(short_text);
@@ -122,6 +129,20 @@ public class Weibo implements Cloneable{
 		jsonDoc.put("uid", uid);
 		jsonDoc.put("mid",mid);
 		return jsonDoc;
+	}
+	
+	public boolean isNotFound(){
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpGet httpGet = new HttpGet(img_url);
+		try {
+			CloseableHttpResponse response = httpclient.execute(httpGet);
+			int code = response.getStatusLine().getStatusCode();
+			System.out.println(code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	
 }
