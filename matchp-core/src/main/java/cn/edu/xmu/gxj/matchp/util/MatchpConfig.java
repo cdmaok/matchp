@@ -25,6 +25,9 @@ public class MatchpConfig {
 	private final String esHostName;
 	private final long esTimeout;
 	
+	private final boolean check_img;
+	private final boolean check_chatter;
+	
 	public MatchpConfig() {
 		try {
 			String filepath = getPath();
@@ -48,6 +51,11 @@ public class MatchpConfig {
 		this.esClusterName = configOrDefault("ES_CLUSTER_NAME", "locales");
 		this.esTimeout = Long.parseLong(configOrDefault("ES_TIMEOUT", "5000"));
 		this.esHostName = configOrDefault("ES_HOESTNAME", "localhost");
+		
+		// add check_img and check_chatter
+		this.check_img = Boolean.parseBoolean(configOrDefault("WEIBO_CHECK_IMG", "true"));
+		this.check_chatter = Boolean.parseBoolean(configOrDefault("WEIBO_CHECH_CHATTER", "true"));
+		
 	}
 	
 	private String getPath(){
@@ -68,6 +76,7 @@ public class MatchpConfig {
 		}
 		return defaultValue;
 	}
+	
 
 
 	public String getEsClusterName() {
@@ -84,6 +93,14 @@ public class MatchpConfig {
 
 	public String getEsHostName() {
 		return esHostName;
+	}
+
+	public boolean isCheck_img() {
+		return check_img;
+	}
+
+	public boolean isCheck_chatter() {
+		return check_chatter;
 	}
 
 	public static void main(String[] args) throws FileNotFoundException, IOException{

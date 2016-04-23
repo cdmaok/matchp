@@ -87,8 +87,14 @@ public class IndexBuilder {
 		Weibo weibo = gson.fromJson(json, Weibo.class);
 		Weibo newWeibo = Weibo.build(weibo);
 		
-		if(newWeibo.isNotFound()){
+		if(matchpconfig.isCheck_img() && newWeibo.isNotFound()){
+			client.close();
 			throw new MPException(ErrCode.Image_Not_Found, "Image Not found.");
+		}
+		
+		if(matchpconfig.isCheck_chatter() && newWeibo.isChatter()){
+			client.close();
+			throw new MPException(ErrCode.Text_Chatter, "text is chatter");
 		}
 		
 		IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, documentType,newWeibo.getMid());

@@ -146,4 +146,8 @@ public class Weibo implements Cloneable{
 		return true;
 	}
 	
+	public boolean isChatter(){
+		return false;
+	}
+	
 }
