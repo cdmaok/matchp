@@ -89,12 +89,12 @@ public class IndexBuilder {
 		
 		if(matchpconfig.isCheck_img() && newWeibo.isNotFound()){
 			client.close();
-			throw new MPException(ErrCode.Image_Not_Found, "Image Not found.");
+			throw new MPException(ErrCode.Image_Not_Found, "Image Not found. url:" + newWeibo.getImg_url());
 		}
 		
 		if(matchpconfig.isCheck_chatter() && newWeibo.isChatter()){
 			client.close();
-			throw new MPException(ErrCode.Text_Chatter, "text is chatter");
+			throw new MPException(ErrCode.Text_Chatter, "text is chatter. text:" + newWeibo.getText());
 		}
 		
 		IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, documentType,newWeibo.getMid());
@@ -131,8 +131,9 @@ public class IndexBuilder {
 		for (SearchHit hit : results) {
 			System.out.println("------------------------------");
 			Map<String, Object> result = hit.getSource();
+			
 			Weibo weibo = new Weibo(result);
-			Entry entry = new Entry(weibo);
+			Entry entry = new Entry(weibo,hit.getScore());
 			resultList.add(entry);
 			logger.debug(result + "," + hit.getScore());
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import cn.edu.xmu.gxj.matchp.api.IndexAPI;
 import cn.edu.xmu.gxj.matchp.es.IndexBuilder;
+import cn.edu.xmu.gxj.matchp.util.ErrCode;
 
 @Component
 public class IndexImpl implements IndexAPI {
@@ -21,7 +22,7 @@ public class IndexImpl implements IndexAPI {
 			e.printStackTrace();
 			return Response.ok(e.getMessage()).build();
 		}
-		return Response.ok().build();
+		return Response.ok(ErrCode.Index_Success).build();
 	}
 
 }
