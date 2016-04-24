@@ -13,8 +13,7 @@ import org.apache.http.impl.client.HttpClients;
 
 public class Weibo implements Cloneable{
 	
-	private Weibo() {
-	}
+	private Weibo() {}
 	
 	public Weibo(Map<String, Object> map){
 		this.comment_no =  (Integer) map.get("comment_no");
@@ -149,5 +148,7 @@ public class Weibo implements Cloneable{
 	public boolean isChatter(){
 		return false;
 	}
+	
+	
 	
 }
