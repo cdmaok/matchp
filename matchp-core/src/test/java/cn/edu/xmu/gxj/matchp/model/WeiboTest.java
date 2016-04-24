@@ -62,12 +62,11 @@ public class WeiboTest {
 			Weibo weibo = gson.fromJson(normal_weibo, Weibo.class);
 			Weibo newWeibo =  Weibo.build(weibo);
 			newWeibo.setImg_url("http://wtf");
-			assertTrue(!newWeibo.isNotFound());
+			assertTrue(newWeibo.isNotFound());
 			
 					
 		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+			return;
 		} 
 	}
 	
@@ -79,13 +78,15 @@ public class WeiboTest {
 			Weibo weibo = gson.fromJson(normal_weibo, Weibo.class);
 			Weibo newWeibo =  Weibo.build(weibo);
 			
-			newWeibo.setImg_url("http://ww1.sinaimg.cn/wap128/6b63135ajw1edtthpmwb9j20z00z0kbx.jpg");
-			assertTrue(newWeibo.isNotFound());
+			newWeibo.setImg_url("http://ww1.sinaimg.cn/wap128/83a4f8cdjw1eg09yxmlrjj20x718gn9k.jpg");
+			assertTrue(!newWeibo.isNotFound());
 					
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		} 
 	}
+	
+
 	
 }

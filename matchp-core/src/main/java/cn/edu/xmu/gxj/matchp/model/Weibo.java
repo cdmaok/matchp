@@ -1,10 +1,12 @@
 package cn.edu.xmu.gxj.matchp.model;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -137,12 +139,11 @@ public class Weibo implements Cloneable{
 		try {
 			CloseableHttpResponse response = httpclient.execute(httpGet);
 			int code = response.getStatusLine().getStatusCode();
-			System.out.println(code);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	public boolean isChatter(){
