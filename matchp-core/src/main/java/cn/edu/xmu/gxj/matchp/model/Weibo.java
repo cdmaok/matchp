@@ -147,8 +147,11 @@ public class Weibo implements Cloneable{
 	}
 	
 	public boolean isChatter(){
+		//TODO: make it chatter
 		return false;
 	}
+	
+
 	
 	
 	
