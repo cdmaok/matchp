@@ -19,11 +19,7 @@ public class QueryImpl implements QueryAPI{
 	
 	private static final Logger logger = LoggerFactory.getLogger(QueryImpl.class);
 
-	public Response QueryLongText() {
-		return null;
-	}
-
-	public Response QueryShortText(String queryText) {
+	public Response QueryLongText(String queryText) {
 		logger.info("query is {}",queryText);
 		String ret = indexBuilder.searchDoc(queryText);
 		// cors

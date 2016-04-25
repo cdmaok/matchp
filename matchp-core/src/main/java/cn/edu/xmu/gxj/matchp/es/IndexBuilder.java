@@ -130,6 +130,8 @@ public class IndexBuilder {
 //				.setQuery(QueryBuilders.fieldQuery("like_no", "0")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 		.setQuery(QueryBuilders.matchQuery("text", query)).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 
+		float queryPolarity = sent.getSentiment(query);
+		
 		SearchHit[] results = response.getHits().getHits();
 		logger.info("Current results: {}" , results.length );
 		ArrayList<Entry> resultList = new ArrayList<Entry>();

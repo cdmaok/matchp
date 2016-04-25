@@ -4,9 +4,10 @@ import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.http.HttpEntity;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
@@ -24,7 +25,7 @@ public class Sentiment {
 	@Autowired
 	private MatchpConfig config;
 	
-	private String api = "snow/?text=";
+	private String api = "snow/";
 	private String host;
 	private String url_str;
 	
@@ -42,12 +43,15 @@ public class Sentiment {
 		if(!config.isSentiment_enable()){
 			return 0;
 		}
-		String final_url = url_str + text;
+		
 		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpGet httpGet = new HttpGet(final_url);
+		HttpPost httpPost = new HttpPost(url_str);
+		httpPost.addHeader("content-type", "application/json");
 		CloseableHttpResponse response = null;
 		try {
-			response = httpclient.execute(httpGet);
+			StringEntity params = new StringEntity("{\"text\":\""+text+"\"}","utf-8");
+			httpPost.setEntity(params);
+			response = httpclient.execute(httpPost);
 			String res = EntityUtils.toString(response.getEntity());
 			Gson gson = new Gson();
 			SentScore sentScore = gson.fromJson(res, SentScore.class);
