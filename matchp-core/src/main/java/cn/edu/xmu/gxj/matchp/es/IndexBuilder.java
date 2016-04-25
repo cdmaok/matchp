@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 
 import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.model.Weibo;
+import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
 import cn.edu.xmu.gxj.matchp.util.ErrCode;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
@@ -38,6 +39,9 @@ public class IndexBuilder {
 
 	@Autowired
 	private MatchpConfig matchpconfig;
+	
+	@Autowired
+	private Sentiment sent;
 
 
 	private Settings settings;
@@ -86,6 +90,7 @@ public class IndexBuilder {
 		Gson gson = new Gson();
 		Weibo weibo = gson.fromJson(json, Weibo.class);
 		Weibo newWeibo = Weibo.build(weibo);
+		newWeibo.setPolarity(sent.getSentiment(newWeibo.getText()));
 		
 		if(matchpconfig.isCheck_img() && newWeibo.isNotFound()){
 			client.close();

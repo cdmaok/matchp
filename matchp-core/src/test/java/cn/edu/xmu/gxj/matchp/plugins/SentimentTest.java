@@ -30,7 +30,9 @@ public class SentimentTest {
 	
 	@Test
 	public void test() {
-		sent.getSentiment("abc");
+		assertEquals(0.5, sent.getSentiment("abc"), 0);
+		assertTrue(sent.getSentiment("好丑") < 0.5);
+		assertTrue(sent.getSentiment("好漂亮") > 0.5);
 	}
 
 }

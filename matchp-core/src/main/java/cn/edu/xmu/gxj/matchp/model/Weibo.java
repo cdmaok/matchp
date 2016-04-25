@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -25,6 +24,7 @@ public class Weibo implements Cloneable{
 		this.rt_no = (Integer) map.get("rt_no");
 		this.img_url = (String) map.get("img_url");
 		this.mid = (String) map.get("mid");
+		this.polarity = (float) map.get("polarity");
 	}
 	
 	private int comment_no;
@@ -34,6 +34,7 @@ public class Weibo implements Cloneable{
 	private int rt_no;
 	private String img_url;
 	private String mid;
+	private float polarity;
 	
 	
 	public int getComment_no() {
@@ -105,6 +106,8 @@ public class Weibo implements Cloneable{
 		}else{
 			Weibo newWeibo = (Weibo) origin.clone();
 			String text = newWeibo.getText();
+			
+			// find the image'url and replace text
 			//TODO: this is so low we need to improve it later.
 			Pattern p = Pattern.compile("http://[^:]*.(jpg|gif|png|jpeg)");
 			Matcher m = p.matcher(text);
@@ -115,6 +118,9 @@ public class Weibo implements Cloneable{
 				newWeibo.setImg_url(img_url);
 				newWeibo.setText(short_text);
 			}
+			
+			
+			
 			return newWeibo;
 		}
 			
@@ -130,17 +136,26 @@ public class Weibo implements Cloneable{
 		jsonDoc.put("text", text);
 		jsonDoc.put("uid", uid);
 		jsonDoc.put("mid",mid);
+		jsonDoc.put("polarity",polarity);
 		return jsonDoc;
 	}
 	
 	public boolean isNotFound(){
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(img_url);
+		CloseableHttpResponse response = null;
 		try {
-			CloseableHttpResponse response = httpclient.execute(httpGet);
+			response = httpclient.execute(httpGet);
+			httpclient.close();
 			int code = response.getStatusLine().getStatusCode();
+			response.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+			try {
+				response.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			return true;
 		}
 		return false;
@@ -149,6 +164,14 @@ public class Weibo implements Cloneable{
 	public boolean isChatter(){
 		//TODO: make it chatter
 		return false;
+	}
+
+	public float getPolarity() {
+		return polarity;
+	}
+
+	public void setPolarity(float polarity) {
+		this.polarity = polarity;
 	}
 	
 
