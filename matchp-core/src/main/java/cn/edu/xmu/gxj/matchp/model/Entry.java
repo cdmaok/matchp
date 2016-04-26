@@ -1,5 +1,7 @@
 package cn.edu.xmu.gxj.matchp.model;
 
+import java.util.Map;
+
 public class Entry {
 	private String text;
 	private String url;
@@ -12,8 +14,10 @@ public class Entry {
 		this.score = score;
 	}
 	
-	public Entry(Weibo weibo,float score){
-		this(weibo.getText(),weibo.getImg_url(),score);
+	public Entry(Map<String, Object> map,float score){
+		this.text = (String) map.get("text");
+		this.url = (String) map.get("img_url");
+		this.score = score;
 	}
 	
 	public String getText() {
@@ -39,6 +43,10 @@ public class Entry {
 	@Override
 	public String toString() {
 		return "Entry [text=" + text + ", url=" + url + "]";
+	}
+	
+	public float calSentiScore(float origin,float hit){
+		return 1 - ( Math.abs(origin - hit) );
 	}
 	
 }

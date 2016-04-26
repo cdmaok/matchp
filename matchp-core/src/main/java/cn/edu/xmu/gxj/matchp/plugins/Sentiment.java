@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
-import cn.edu.xmu.gxj.matchp.model.SentScore;
+import cn.edu.xmu.gxj.matchp.model.Reply;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
 @Component
@@ -54,12 +54,12 @@ public class Sentiment {
 			response = httpclient.execute(httpPost);
 			String res = EntityUtils.toString(response.getEntity());
 			Gson gson = new Gson();
-			SentScore sentScore = gson.fromJson(res, SentScore.class);
+			Reply sentScore = gson.fromJson(res, Reply.class);
 			//{"Message": 0.5, "Code": "200"}
 			response.close();
 			httpclient.close();
 			float score = 0;
-			if(sentScore.getCode().equals("200")){
+			if(sentScore.getCode() == 200){
 				score = Float.parseFloat(sentScore.getMessage());
 			}else{
 				score = 0;

@@ -15,5 +15,5 @@ public interface QueryAPI {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	Response QueryLongText(@FormParam("text") String query);
+	Response QueryLongText(String query);
 }

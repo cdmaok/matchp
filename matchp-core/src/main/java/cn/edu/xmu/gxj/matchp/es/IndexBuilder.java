@@ -80,12 +80,7 @@ public class IndexBuilder {
 	public void addDoc(String json) throws IOException, CloneNotSupportedException, MPException {
 
 		Client client = getClient();
-		// build json object
-		// XContentBuilder contentBuilder =
-		// jsonBuilder().startObject().prettyPrint();
-		// contentBuilder.field("name", "jai");
-		// contentBuilder.endObject();
-		// indexRequestBuilder.setSource(contentBuilder);
+
 
 		Gson gson = new Gson();
 		Weibo weibo = gson.fromJson(json, Weibo.class);
@@ -139,8 +134,7 @@ public class IndexBuilder {
 			System.out.println("------------------------------");
 			Map<String, Object> result = hit.getSource();
 			
-			Weibo weibo = new Weibo(result);
-			Entry entry = new Entry(weibo,hit.getScore());
+			Entry entry = new Entry(result,hit.getScore());
 			resultList.add(entry);
 			logger.debug(result + "," + hit.getScore());
 

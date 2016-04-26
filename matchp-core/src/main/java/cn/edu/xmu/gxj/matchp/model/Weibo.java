@@ -24,7 +24,7 @@ public class Weibo implements Cloneable{
 		this.rt_no = (Integer) map.get("rt_no");
 		this.img_url = (String) map.get("img_url");
 		this.mid = (String) map.get("mid");
-		this.polarity = (float) map.get("polarity");
+		this.polarity = (Float) map.get("polarity");
 	}
 	
 	private int comment_no;
