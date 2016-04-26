@@ -42,7 +42,9 @@ public class Entry {
 
 	@Override
 	public String toString() {
-		return "Entry [text=" + text + ", url=" + url + "]";
+		return "Entry [text=" + text + ", url=" + url + ", score=" + score + "]";
 	}
+
+	
 	
 }

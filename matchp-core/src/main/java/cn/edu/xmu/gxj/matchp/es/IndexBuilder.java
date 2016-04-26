@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.model.Weibo;
 import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
+import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
 import cn.edu.xmu.gxj.matchp.util.ErrCode;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
@@ -42,6 +43,9 @@ public class IndexBuilder {
 	
 	@Autowired
 	private Sentiment sent;
+	
+	@Autowired
+	private EntryBuilder entryBuilder;
 
 
 	private Settings settings;
@@ -99,7 +103,7 @@ public class IndexBuilder {
 		
 		IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, documentType,newWeibo.getMid());
 		indexRequestBuilder.setSource(newWeibo.toMap());
-		IndexResponse response = indexRequestBuilder.execute().actionGet();
+		indexRequestBuilder.execute().actionGet();
 		
 		client.close();
 	}
@@ -133,8 +137,7 @@ public class IndexBuilder {
 		for (SearchHit hit : results) {
 			System.out.println("------------------------------");
 			Map<String, Object> result = hit.getSource();
-			
-			Entry entry = new Entry(result,hit.getScore());
+			Entry entry = entryBuilder.buildEntry(query, result, hit.getScore());
 			resultList.add(entry);
 			logger.debug(result + "," + hit.getScore());
 
@@ -143,4 +146,17 @@ public class IndexBuilder {
 		return new Gson().toJson(resultList);
 	}
 
+	/*
+	 * useless, only for test case.
+	 */
+	public EntryBuilder getEntryBuilder() {
+		return entryBuilder;
+	}
+
+	public void setEntryBuilder(EntryBuilder entryBuilder) {
+		this.entryBuilder = entryBuilder;
+	}
+
+	
+	
 }

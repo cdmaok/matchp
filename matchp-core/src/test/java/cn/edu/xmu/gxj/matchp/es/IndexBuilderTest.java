@@ -3,6 +3,7 @@ package cn.edu.xmu.gxj.matchp.es;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import cn.edu.xmu.gxj.matchp.model.Entry;
+import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
+import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;  
 
 @RunWith(MockitoJUnitRunner.class)
@@ -39,6 +42,12 @@ public class IndexBuilderTest {
 	@Mock
 	MatchpConfig config;
 	
+	@Mock
+	Sentiment sent;
+	
+	@InjectMocks
+	EntryBuilder entryBuilder;
+	
 	@InjectMocks
 	IndexBuilder builder;
 	
@@ -48,7 +57,10 @@ public class IndexBuilderTest {
 		when(config.getEsClusterName()).thenReturn("elasticsearch");
 		when(config.getEsHostName()).thenReturn("127.0.0.1");
 		when(config.getEsTimeout()).thenReturn(5000L);
+		when(config.isSentiment_enable()).thenReturn(false);
+		when(sent.getSentiment(any(String.class))).thenReturn(0.5f);
 		builder.init();
+		builder.setEntryBuilder(entryBuilder);
 	}
 	
 	@Test

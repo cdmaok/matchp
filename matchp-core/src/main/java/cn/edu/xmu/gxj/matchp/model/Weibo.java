@@ -25,6 +25,7 @@ public class Weibo implements Cloneable{
 		this.img_url = (String) map.get("img_url");
 		this.mid = (String) map.get("mid");
 		this.polarity = (Float) map.get("polarity");
+		this.size = (Float) map.get("size");
 	}
 	
 	private int comment_no;
@@ -35,6 +36,9 @@ public class Weibo implements Cloneable{
 	private String img_url;
 	private String mid;
 	private float polarity;
+	
+	// pic's size
+	private float size;
 	
 	
 	public int getComment_no() {
@@ -102,6 +106,9 @@ public class Weibo implements Cloneable{
 
 	public static Weibo build(Weibo origin) throws CloneNotSupportedException{
 		if( origin.getImg_url() != null){
+			
+			String img_url = origin.getImg_url();
+			
 			return (Weibo)origin.clone();
 		}else{
 			Weibo newWeibo = (Weibo) origin.clone();
@@ -149,6 +156,8 @@ public class Weibo implements Cloneable{
 			httpclient.close();
 			int code = response.getStatusLine().getStatusCode();
 			response.close();
+			Pic pic = new Pic(img_url);
+			size = pic.getWidth() / pic.getHeight();
 		} catch (Exception e) {
 			e.printStackTrace();
 			try {
@@ -156,6 +165,7 @@ public class Weibo implements Cloneable{
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
+			size = 0;
 			return true;
 		}
 		return false;
@@ -173,9 +183,14 @@ public class Weibo implements Cloneable{
 	public void setPolarity(float polarity) {
 		this.polarity = polarity;
 	}
-	
 
-	
-	
+	public float getSize() {
+		return size;
+	}
+
+	public void setSize(float size) {
+		this.size = size;
+	}
+		
 	
 }

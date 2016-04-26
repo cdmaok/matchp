@@ -49,7 +49,7 @@ public class EntryBuilderTest {
 		float hit = 0.45f;
 		String query = "abc";
 		Entry entry = builder.buildEntry(query,	 map, hit);
-		assertEquals( 1 - (0.5-0.34) + hit, entry.getScore(), 0.1);
+		assertEquals( 1 - (0.5-0.34) + hit, entry.getScore(), 0.01);
 	}
 
 }
