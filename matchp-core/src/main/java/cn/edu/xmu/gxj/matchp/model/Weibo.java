@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -25,6 +24,8 @@ public class Weibo implements Cloneable{
 		this.rt_no = (Integer) map.get("rt_no");
 		this.img_url = (String) map.get("img_url");
 		this.mid = (String) map.get("mid");
+		this.polarity = (Float) map.get("polarity");
+		this.size = (Float) map.get("size");
 	}
 	
 	private int comment_no;
@@ -34,6 +35,10 @@ public class Weibo implements Cloneable{
 	private int rt_no;
 	private String img_url;
 	private String mid;
+	private float polarity;
+	
+	// pic's size
+	private float size;
 	
 	
 	public int getComment_no() {
@@ -101,10 +106,15 @@ public class Weibo implements Cloneable{
 
 	public static Weibo build(Weibo origin) throws CloneNotSupportedException{
 		if( origin.getImg_url() != null){
+			
+			String img_url = origin.getImg_url();
+			
 			return (Weibo)origin.clone();
 		}else{
 			Weibo newWeibo = (Weibo) origin.clone();
 			String text = newWeibo.getText();
+			
+			// find the image'url and replace text
 			//TODO: this is so low we need to improve it later.
 			Pattern p = Pattern.compile("http://[^:]*.(jpg|gif|png|jpeg)");
 			Matcher m = p.matcher(text);
@@ -115,6 +125,9 @@ public class Weibo implements Cloneable{
 				newWeibo.setImg_url(img_url);
 				newWeibo.setText(short_text);
 			}
+			
+			
+			
 			return newWeibo;
 		}
 			
@@ -130,26 +143,54 @@ public class Weibo implements Cloneable{
 		jsonDoc.put("text", text);
 		jsonDoc.put("uid", uid);
 		jsonDoc.put("mid",mid);
+		jsonDoc.put("polarity",polarity);
 		return jsonDoc;
 	}
 	
 	public boolean isNotFound(){
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(img_url);
+		CloseableHttpResponse response = null;
 		try {
-			CloseableHttpResponse response = httpclient.execute(httpGet);
+			response = httpclient.execute(httpGet);
+			httpclient.close();
 			int code = response.getStatusLine().getStatusCode();
+			response.close();
+			Pic pic = new Pic(img_url);
+			size = pic.getWidth() / pic.getHeight();
 		} catch (Exception e) {
 			e.printStackTrace();
+			try {
+				response.close();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			size = 0;
 			return true;
 		}
 		return false;
 	}
 	
 	public boolean isChatter(){
+		//TODO: make it chatter
 		return false;
 	}
-	
-	
+
+	public float getPolarity() {
+		return polarity;
+	}
+
+	public void setPolarity(float polarity) {
+		this.polarity = polarity;
+	}
+
+	public float getSize() {
+		return size;
+	}
+
+	public void setSize(float size) {
+		this.size = size;
+	}
+		
 	
 }

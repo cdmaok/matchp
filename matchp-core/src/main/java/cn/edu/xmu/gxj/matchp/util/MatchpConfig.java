@@ -28,6 +28,9 @@ public class MatchpConfig {
 	private final boolean check_img;
 	private final boolean check_chatter;
 	
+	private final boolean sentiment_enable;
+	private final String sentiment_server;
+	
 	public MatchpConfig() {
 		try {
 			String filepath = getPath();
@@ -55,7 +58,8 @@ public class MatchpConfig {
 		// add check_img and check_chatter
 		this.check_img = Boolean.parseBoolean(configOrDefault("WEIBO_CHECK_IMG", "true"));
 		this.check_chatter = Boolean.parseBoolean(configOrDefault("WEIBO_CHECH_CHATTER", "true"));
-		
+		this.sentiment_enable = Boolean.parseBoolean(configOrDefault("SENTIMENT_ENABLE", "true"));
+		this.sentiment_server = configOrDefault("SENTIMENT_IP", "localhost");
 	}
 	
 	private String getPath(){
@@ -101,6 +105,14 @@ public class MatchpConfig {
 
 	public boolean isCheck_chatter() {
 		return check_chatter;
+	}
+
+	public boolean isSentiment_enable() {
+		return sentiment_enable;
+	}
+
+	public String getSentiment_server() {
+		return sentiment_server;
 	}
 
 	public static void main(String[] args) throws FileNotFoundException, IOException{
