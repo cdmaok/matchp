@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import cn.edu.xmu.gxj.matchp.api.QueryAPI;
 import cn.edu.xmu.gxj.matchp.es.IndexBuilder;
 import cn.edu.xmu.gxj.matchp.model.Reply;
+import cn.edu.xmu.gxj.matchp.util.Fields;
 import cn.edu.xmu.gxj.matchp.util.JsonUtility;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 
@@ -22,7 +23,6 @@ public class QueryImpl implements QueryAPI{
 	@Autowired
 	public IndexBuilder indexBuilder;
 	
-	public final String queryField = "text";
 	
 	private static final Logger logger = LoggerFactory.getLogger(QueryImpl.class);
 
@@ -30,7 +30,7 @@ public class QueryImpl implements QueryAPI{
 		logger.info("query is {}",query);
 		String ret;
 		try {
-			String queryText = JsonUtility.getString(query, queryField);
+			String queryText = JsonUtility.getString(query, Fields.queryField);
 			ret = indexBuilder.searchDoc(queryText);
 
 			// cors
