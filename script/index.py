@@ -2,15 +2,17 @@
 
 # this file is to add index by certain file.
 
-import urllib2,os,urllib,sys
+import urllib2,os,urllib,sys,time
 
 url = 'http://localhost:8080'
 api = '/matchp-web/api/index'
 
 def addIndex(filepath):
 	weibos = [ line.strip() for line in open(filepath).readlines()]
-	for weibo in weibos:
+	for index,weibo in enumerate(weibos):
 		fetch_weibo(url+api,weibo)
+		if index % 1000 == 0:
+			time.sleep(60)
 
 def fetch_weibo(url,text):
 	#data = urllib.urlencode(text)

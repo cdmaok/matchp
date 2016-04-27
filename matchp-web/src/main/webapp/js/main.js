@@ -2,7 +2,7 @@ $(function() {
   // global settings
   var options = {
 		  // does it need to be locked?
-    queryServer: 'http://localhost:8080/matchp-web/api/',
+    queryServer: 'http://121.192.180.198:8080/matchp-web/api/',
     imgsRow: 5,
     imgsCol: 4
   }
