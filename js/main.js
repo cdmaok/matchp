@@ -1,7 +1,7 @@
 $(function() {
   // global settings
   var options = {
-    queryServer: 'http://114.215.99.92:8080/matchp-web/api/',
+    queryServer: 'http://localhost:8080/matchp-web/api/',
     imgsRow: 5,
     imgsCol: 4
   }
@@ -31,12 +31,17 @@ $(function() {
 
     var that = this;
     var queryText = $queryText.val();
-    var queryUrl = options.queryServer + 'query?q=' + queryText;
+    var queryUrl = options.queryServer + 'query/';
+    var queryJson = {
+    	text: queryText
+    }
 
     $.ajax({
       url: queryUrl,
       dataType: 'json',
-      type: 'get',
+      type: 'post',
+      data: JSON.stringify(queryJson)
+      contentType: 'application/json'
       success: function(data) {
         resultHandler(data);
         that.disabled = '';
