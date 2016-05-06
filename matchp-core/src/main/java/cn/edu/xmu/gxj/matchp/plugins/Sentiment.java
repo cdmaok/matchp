@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 
 import cn.edu.xmu.gxj.matchp.model.Reply;
+import cn.edu.xmu.gxj.matchp.util.JsonUtility;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
 @Component
@@ -49,7 +50,8 @@ public class Sentiment {
 		httpPost.addHeader("content-type", "application/json");
 		CloseableHttpResponse response = null;
 		try {
-			StringEntity params = new StringEntity("{\"text\":\""+text+"\"}","utf-8");
+			String jsonText = JsonUtility.newJsonString("text", text);
+			StringEntity params = new StringEntity(jsonText, "utf-8");
 			httpPost.setEntity(params);
 			response = httpclient.execute(httpPost);
 			String res = EntityUtils.toString(response.getEntity());
