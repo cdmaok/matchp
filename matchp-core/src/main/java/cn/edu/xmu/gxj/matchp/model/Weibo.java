@@ -148,6 +148,10 @@ public class Weibo implements Cloneable{
 	}
 	
 	public boolean isNotFound(){
+		//TODO: so ugly. change it.
+		if (img_url == null) {
+			return true;
+		}
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(img_url);
 		CloseableHttpResponse response = null;
