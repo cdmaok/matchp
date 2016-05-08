@@ -44,4 +44,11 @@ public class QueryImpl implements QueryAPI{
 
 	}
 
+	@Override
+	public Response QueryGet(String text) {
+		System.out.println(text);
+		// cors
+		return Response.ok().entity("hello world").header("Access-Control-Allow-Origin", "*").build();
+	}
+
 }

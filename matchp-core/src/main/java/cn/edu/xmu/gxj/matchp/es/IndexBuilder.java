@@ -135,7 +135,6 @@ public class IndexBuilder {
 		logger.info("Current results: {}" , results.length );
 		ArrayList<Entry> resultList = new ArrayList<Entry>();
 		for (SearchHit hit : results) {
-			System.out.println("------------------------------");
 			Map<String, Object> result = hit.getSource();
 			Entry entry = entryBuilder.buildEntry(query, result, hit.getScore());
 			resultList.add(entry);
