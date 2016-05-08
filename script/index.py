@@ -23,6 +23,7 @@ def fetch_weibo(url,text):
 		data = res.read()
 		print data
 	except urllib2.HTTPError as e:
+		print text
 		print e.code
 		print e.read()
 
