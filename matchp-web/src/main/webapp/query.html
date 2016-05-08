@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MatchP</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+    <header>
+        <h1>MatchP - cdmaok</h1>
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <form role="form">
+                    <div class="form-group">
+                        <label for="query-text">Please input your tweets:</label>
+                        <textarea name="query-text" id="query-text" cols="30" rows="5" class="form-control"></textarea>
+                    </div>
+                    <button id="submit" type="submit" class="btn btn-primary btn-lg btn-block">S E A R C H</button>
+                </form>
+            </div>
+        </div>
+        <div id="result-container" class="row hidden">
+            <div class="col-md-8 col-md-offset-2">
+                <p class="total-result">Total Result: <span id="result-count">0</span></p>
+                <div id="imgs-container">
+                </div>
+                <div id="pager" class="pager hidden">
+                    <button id="pre-btn" class="btn btn-default" disabled="disabled">&#x25c0;</button>
+                    <span>
+                        <span id="cur-page-index">1</span> / 
+                        <span id="total-page-num">1</span>
+                    </span>
+                    <button id="nxt-btn" class="btn btn-default" disabled="disabled">&#x25ba;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
