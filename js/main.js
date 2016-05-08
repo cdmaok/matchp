@@ -1,7 +1,7 @@
 $(function() {
   // global settings
   var options = {
-    queryServer: 'http://localhost:8080/matchp-web/api/',
+    queryServer: 'http://121.192.180.198:8080/matchp-web/api/',
     imgsRow: 5,
     imgsCol: 4
   }
@@ -40,8 +40,8 @@ $(function() {
       url: queryUrl,
       dataType: 'json',
       type: 'post',
-      data: JSON.stringify(queryJson)
-      contentType: 'application/json'
+      data: JSON.stringify(queryJson),
+      contentType: 'application/json',
       success: function(data) {
         resultHandler(data);
         that.disabled = '';
