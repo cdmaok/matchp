@@ -34,12 +34,12 @@ public class QueryImpl implements QueryAPI{
 			ret = indexBuilder.searchDoc(queryText);
 
 			// cors
-			return Response.ok().entity(ret).header("Access-Control-Allow-Origin", "*").build();
+			return Response.ok().entity(ret).build();
 		} catch (MPException e) {
 			e.printStackTrace();
 			// cors
 			Reply reply = new Reply(e);
-			return Response.ok(new Gson().toJson(reply),MediaType.APPLICATION_JSON).header("Access-Control-Allow-Origin", "*").build();
+			return Response.ok(new Gson().toJson(reply),MediaType.APPLICATION_JSON).build();
 		}
 
 	}
@@ -48,7 +48,8 @@ public class QueryImpl implements QueryAPI{
 	public Response QueryGet(String text) {
 		System.out.println(text);
 		// cors
-		return Response.ok().entity("hello world").header("Access-Control-Allow-Origin", "*").build();
+		return Response.ok().entity("hello world").build();
 	}
+
 
 }
