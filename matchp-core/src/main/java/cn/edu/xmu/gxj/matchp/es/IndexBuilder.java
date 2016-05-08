@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -11,7 +12,6 @@ import javax.annotation.PostConstruct;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
@@ -31,6 +31,7 @@ import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.model.Weibo;
 import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
 import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
+import cn.edu.xmu.gxj.matchp.score.ScoreComparator;
 import cn.edu.xmu.gxj.matchp.util.ErrCode;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
@@ -125,22 +126,31 @@ public class IndexBuilder {
 
 	public String searchDoc(String query) {
 		Client client = getClient();
+		
+		long queryStart = System.currentTimeMillis();
+		
 		SearchResponse response = client.prepareSearch(indexName).setTypes(documentType).setSearchType(SearchType.QUERY_AND_FETCH)
 //				.setQuery(QueryBuilders.fieldQuery("like_no", "0")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 		.setQuery(QueryBuilders.matchQuery("text", query)).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 
-
-		
+		long queryEnd = System.currentTimeMillis();
+		double querySenti = sent.getSentiment(query);
+		long mergeStart = System.currentTimeMillis();
 		SearchHit[] results = response.getHits().getHits();
-		logger.info("Current results: {}" , results.length );
 		ArrayList<Entry> resultList = new ArrayList<Entry>();
 		for (SearchHit hit : results) {
 			Map<String, Object> result = hit.getSource();
-			Entry entry = entryBuilder.buildEntry(query, result, hit.getScore());
+			Entry entry = entryBuilder.buildEntry(querySenti, result, hit.getScore());
 			resultList.add(entry);
 			logger.debug(result + "," + hit.getScore());
 
 		}
+		long mergeEnd = System.currentTimeMillis();
+		long sortStart = System.currentTimeMillis();
+		Collections.sort(resultList, new ScoreComparator());
+		long sortEnd = System.currentTimeMillis();
+		logger.info("query:{}, using time: query = {}ms, merge = {}ms, sort = {}ms, total = {}ms, result",
+				query, queryEnd - queryStart, mergeEnd - mergeStart, sortEnd - sortStart, sortEnd - queryStart, resultList.size());
 		client.close();
 		return new Gson().toJson(resultList);
 	}

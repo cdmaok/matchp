@@ -21,11 +21,10 @@ public class EntryBuilder {
 	@Autowired
 	private Sentiment sent;
 
-	public  Entry buildEntry(String query,Map<String, Object> map, float hit){
+	public  Entry buildEntry(double querySenti,Map<String, Object> map, float hit){
 		
 		double sentiScore = 0;
 		if (config.isSentiment_enable()) {
-			double querySenti = sent.getSentiment(query);
 			double resultSenti = (double) map.get(Fields.polarity);
 			sentiScore = calSentiment(querySenti, resultSenti);
 		}
