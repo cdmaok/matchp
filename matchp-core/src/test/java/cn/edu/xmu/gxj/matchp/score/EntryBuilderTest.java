@@ -1,12 +1,10 @@
 package cn.edu.xmu.gxj.matchp.score;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.xml.soap.Text;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,8 +45,7 @@ public class EntryBuilderTest {
 		map.put(Fields.text, "abc");
 		map.put(Fields.url, "abc");
 		float hit = 0.45f;
-		String query = "abc";
-		Entry entry = builder.buildEntry(query,	 map, hit);
+		Entry entry = builder.buildEntry(0.5,	 map, hit);
 		assertEquals( 1 - (0.5-0.34) + hit, entry.getScore(), 0.01);
 	}
 

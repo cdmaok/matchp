@@ -2,13 +2,10 @@ package cn.edu.xmu.gxj.matchp.score;
 
 import java.util.Map;
 
-import javax.xml.soap.Text;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import cn.edu.xmu.gxj.matchp.model.Entry;
-import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
 import cn.edu.xmu.gxj.matchp.util.Fields;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
@@ -18,8 +15,6 @@ public class EntryBuilder {
 	@Autowired
 	private MatchpConfig config;
 	
-	@Autowired
-	private Sentiment sent;
 
 	public  Entry buildEntry(double querySenti,Map<String, Object> map, float hit){
 		
