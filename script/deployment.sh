@@ -12,5 +12,11 @@ cd $TOMCAT_HOME/bin
 ## need to test the tomcat if is ready or not use curl or something.
 sudo sh shutdown.sh
 sudo sh startup.sh
-echo 'finish update'
+sleep 10s
+curl -m 1 http://localhost:8080/matchp-web/api/query?q=abc
+if [ 0 -eq $? ];then
+	echo 'finish update'
+else
+	echo 'we may lost tomcat. check it manually.'
+fi;
 
