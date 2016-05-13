@@ -6,6 +6,12 @@ TOMCAT_HOME=/usr/local/apache-tomcat-7.0.27
 cd $MP_HOME
 git pull origin master
 mvn clean package
+if [ 0 -eq $?]; then
+	echo "build successfully"
+else
+	echo "something was wrong."
+	exit 1
+fi
 sudo cp ./matchp-web/target/matchp-web.war $TOMCAT_HOME/webapps/
 sudo rm -rf $TOMCAT_HOME/webapps/matchp-web
 cd $TOMCAT_HOME/bin
