@@ -128,9 +128,8 @@ public class IndexBuilder {
 		Client client = getClient();
 		
 		long queryStart = System.currentTimeMillis();
-		
-		SearchResponse response = client.prepareSearch(indexName).setTypes(documentType).setSearchType(SearchType.QUERY_AND_FETCH)
-//				.setQuery(QueryBuilders.fieldQuery("like_no", "0")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
+		// we change search type to 'query then fetch' from 'query and fetch',otherwise it will ignore the limit size.
+		SearchResponse response = client.prepareSearch(indexName).setTypes(documentType).setSearchType(SearchType.QUERY_THEN_FETCH)
 		.setQuery(QueryBuilders.matchQuery("text", query)).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 
 		long queryEnd = System.currentTimeMillis();
