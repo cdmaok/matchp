@@ -41,7 +41,7 @@ public class ImageSign {
 	}
 	
 	public String getSignature(String text){
-		if(!config.isSentiment_enable()){
+		if(!config.isImage_sign_enable()){
 			return "";
 		}
 		

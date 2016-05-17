@@ -156,7 +156,7 @@ public class IndexBuilder {
 				resultList.add(entry);
 				signs.add(sign);
 			}else{
-				System.out.println("find the duplicated one." + sign + " " + entry.getUrl());
+				logger.debug("find the duplicated one. sign is {}, url is {}", sign, entry.getUrl());
 			}
 			logger.debug(result + "," + hit.getScore());
 
