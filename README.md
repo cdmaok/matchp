@@ -17,3 +17,6 @@ The project is based on spring framework and elastic Search, which is organized 
 matchp-core: code about elastic search api
 matchp-web: program web interface
 matchp-api: program's rest api.
+
+## TODOLIST
+1. Image de-duplication (Finished)
