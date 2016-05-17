@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -29,6 +30,7 @@ import com.google.gson.Gson;
 
 import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.model.Weibo;
+import cn.edu.xmu.gxj.matchp.plugins.ImageSign;
 import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
 import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
 import cn.edu.xmu.gxj.matchp.score.ScoreComparator;
@@ -44,6 +46,9 @@ public class IndexBuilder {
 	
 	@Autowired
 	private Sentiment sent;
+	
+	@Autowired
+	private ImageSign signSever;
 	
 	@Autowired
 	private EntryBuilder entryBuilder;
@@ -91,6 +96,7 @@ public class IndexBuilder {
 		Weibo weibo = gson.fromJson(json, Weibo.class);
 		Weibo newWeibo = Weibo.build(weibo);
 		newWeibo.setPolarity(sent.getSentiment(newWeibo.getText()));
+		newWeibo.setImgSignature(signSever.getSignature(newWeibo.getImg_url()));
 		
 		if(matchpconfig.isCheck_img() && newWeibo.isNotFound()){
 			client.close();
@@ -137,10 +143,21 @@ public class IndexBuilder {
 		long mergeStart = System.currentTimeMillis();
 		SearchHit[] results = response.getHits().getHits();
 		ArrayList<Entry> resultList = new ArrayList<Entry>();
+		HashSet<String> signs = new HashSet<>();
 		for (SearchHit hit : results) {
 			Map<String, Object> result = hit.getSource();
 			Entry entry = entryBuilder.buildEntry(querySenti, result, hit.getScore());
-			resultList.add(entry);
+			//TODO: this de-duplication is ugly.
+			String sign = (String) result.get("signature");
+			if (sign == null) {
+				sign = signSever.getSignature(entry.getUrl());
+			}
+			if (!signs.contains(sign)) {
+				resultList.add(entry);
+				signs.add(sign);
+			}else{
+				System.out.println("find the duplicated one." + sign + " " + entry.getUrl());
+			}
 			logger.debug(result + "," + hit.getScore());
 
 		}

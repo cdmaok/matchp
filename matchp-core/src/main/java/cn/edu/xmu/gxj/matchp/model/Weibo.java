@@ -37,6 +37,8 @@ public class Weibo implements Cloneable{
 	private String mid;
 	private float polarity;
 	
+	private String imgSignature;
+	
 	// pic's size
 	private float size;
 	
@@ -144,6 +146,7 @@ public class Weibo implements Cloneable{
 		jsonDoc.put("uid", uid);
 		jsonDoc.put("mid",mid);
 		jsonDoc.put("polarity",polarity);
+		jsonDoc.put("signature", imgSignature);
 		return jsonDoc;
 	}
 	
@@ -195,6 +198,15 @@ public class Weibo implements Cloneable{
 	public void setSize(float size) {
 		this.size = size;
 	}
+
+	public String getImgSignature() {
+		return imgSignature;
+	}
+
+	public void setImgSignature(String imgSignature) {
+		this.imgSignature = imgSignature;
+	}
 		
+	
 	
 }
