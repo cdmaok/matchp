@@ -8,8 +8,7 @@ import cn.edu.xmu.gxj.matchp.model.PicTest;
 import cn.edu.xmu.gxj.matchp.model.WeiboTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({PicTest.class,
-	WeiboTest.class})
+@SuiteClasses({})
 
 public class MvnTestControl {
 
