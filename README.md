@@ -2,6 +2,8 @@
 This is a picture matching program.  
 User can input the text and get matching picture both through UI interface and restful interface.  
 
+[![Build Status](https://travis-ci.org/cdmaok/matchp.svg?branch=master)](https://travis-ci.org/cdmaok/matchp)
+
 ## About the Program
 1. It's developed by using Spring Framework and Elastic Search.
 

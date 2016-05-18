@@ -22,7 +22,7 @@ public class IndexImpl implements IndexAPI {
 	@Autowired
 	private IndexBuilder indexBuilder;
 	
-	public Response AddIndex(String text) {
+	public Response AddIndex(String type,String text) {
 		try {
 			indexBuilder.addDoc(text);
 		} catch (IOException | CloneNotSupportedException e) {
