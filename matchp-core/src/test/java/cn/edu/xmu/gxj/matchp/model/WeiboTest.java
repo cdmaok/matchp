@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -53,8 +54,8 @@ public class WeiboTest {
 		} 
 	}
 	
-	
-	@Test
+	@Ignore
+//	@Test
 	public void testNotFound(){
 		
 		try {
@@ -70,7 +71,8 @@ public class WeiboTest {
 		} 
 	}
 	
-	@Test
+	@Ignore
+//	@Test
 	public void testFound(){
 		
 		try {
