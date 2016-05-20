@@ -10,15 +10,19 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
@@ -64,6 +68,7 @@ public class IndexBuilder {
 	public void init(){
 		settings = Settings.settingsBuilder()
 		        .put("cluster.name", matchpconfig.getEsClusterName()).build();
+		createIndex();
 	}
 
 	private Client getClient(){
@@ -86,6 +91,49 @@ public class IndexBuilder {
 
 	static final Logger logger = LoggerFactory.getLogger(IndexBuilder.class);
 
+	private void createIndex(){
+		Client client = getClient();
+		boolean exist = client.admin().indices().prepareExists(indexName).execute().actionGet().isExists();
+		if (!exist) {
+			CreateIndexRequestBuilder builder = client.admin().indices().prepareCreate(indexName).setSettings(getIndexSetting());
+			builder.execute().actionGet();
+		}else {
+			logger.info("{} already exist, skip create index",indexName);
+			client.close();
+		}
+	}
+	
+	/*
+	 * generate the index settings
+	 */
+	private XContentBuilder getIndexSetting(){
+		XContentBuilder settingbuilder = null;
+		try {
+			settingbuilder = XContentFactory.jsonBuilder()
+					.startObject()
+					.field("index", indexName)
+					.field("type",documentType)
+						.startObject("body")
+							.startObject(documentType)
+								.startObject("properties")
+									.startObject("text")
+									.field("type","string")
+									.field("analyzer", "ik_syno_smart")
+									.field("search_analyzer", "ik_syno_smart")
+									.endObject()
+								.endObject()
+							.endObject()
+						.endObject()
+					.endObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.info("create index setting failure, reason:{}",e.getMessage());
+		}
+		
+		return settingbuilder;
+				
+	}
+	
 
 	public void addDoc(String json) throws IOException, CloneNotSupportedException, MPException {
 
@@ -135,8 +183,8 @@ public class IndexBuilder {
 		
 		long queryStart = System.currentTimeMillis();
 		// we change search type to 'query then fetch' from 'query and fetch',otherwise it will ignore the limit size.
-		SearchResponse response = client.prepareSearch(indexName).setTypes(documentType).setSearchType(SearchType.QUERY_THEN_FETCH)
-		.setQuery(QueryBuilders.matchQuery("text", query)).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
+		SearchResponse response = client.prepareSearch(indexName).setSearchType(SearchType.QUERY_THEN_FETCH)
+		.setQuery(QueryBuilders.matchQuery("text", query).analyzer("ik_syno")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 
 		long queryEnd = System.currentTimeMillis();
 		double querySenti = sent.getSentiment(query);
