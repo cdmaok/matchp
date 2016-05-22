@@ -43,7 +43,7 @@ public class EntryBuilderTest {
 		Map<String, Object> map = new HashMap<>();
 		map.put(Fields.polarity, 0.34);
 		map.put(Fields.text, "abc");
-		map.put(Fields.url, "abc");
+		map.put(Fields.img, "abc");
 		float hit = 0.45f;
 		Entry entry = builder.buildEntry(0.5,	 map, hit);
 		assertEquals( 1 - (0.5-0.34) + hit, entry.getScore(), 0.01);

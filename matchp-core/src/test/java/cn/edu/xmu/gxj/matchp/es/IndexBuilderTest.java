@@ -55,7 +55,7 @@ public class IndexBuilderTest {
 	public void setUp(){
 		
 		when(config.getEsClusterName()).thenReturn("elasticsearch");
-		when(config.getEsHostName()).thenReturn("127.0.0.1");
+		when(config.getEsHostName()).thenReturn("121.192.180.198");
 		when(config.getEsTimeout()).thenReturn(5000L);
 		when(config.isSentiment_enable()).thenReturn(false);
 		when(sent.getSentiment(any(String.class))).thenReturn(0.5f);
@@ -67,7 +67,7 @@ public class IndexBuilderTest {
 	public void addIndexAndQuery(){
 
 		try {
-			builder.addDoc(str);
+			builder.addDoc("weibo",str);
 			String ret = builder.searchDoc("another");
 			TypeToken<List<Entry>> token = new TypeToken<List<Entry>>() {};
 			ArrayList<Entry> results = new Gson().fromJson(ret, token.getType());
@@ -85,7 +85,7 @@ public class IndexBuilderTest {
 	public void addChineseIndexAndQuery(){
 
 		try {
-			builder.addDoc(chineStr);
+			builder.addDoc("weibo",chineStr);
 			String ret = builder.searchDoc("好久 主持");
 			TypeToken<List<Entry>> token = new TypeToken<List<Entry>>() {};
 			ArrayList<Entry> results = new Gson().fromJson(ret, token.getType());

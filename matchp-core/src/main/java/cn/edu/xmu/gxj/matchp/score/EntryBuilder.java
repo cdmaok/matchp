@@ -24,7 +24,7 @@ public class EntryBuilder {
 			sentiScore = calSentiment(querySenti, resultSenti);
 		}
 		String text = (String) map.get(Fields.text);
-		String url = (String) map.get(Fields.url);
+		String url = (String) map.get(Fields.img);
 		double score = hit + sentiScore;
 		return new Entry(text, url, score);
 	}

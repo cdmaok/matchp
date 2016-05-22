@@ -39,6 +39,7 @@ import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
 import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
 import cn.edu.xmu.gxj.matchp.score.ScoreComparator;
 import cn.edu.xmu.gxj.matchp.util.ErrCode;
+import cn.edu.xmu.gxj.matchp.util.Fields;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
@@ -86,8 +87,7 @@ public class IndexBuilder {
 	
 	
 	static String indexName = "matchp";
-	static String documentType = "weibo";
-	static String idField = "mid";
+	static String idField = "doc_id";
 
 	static final Logger logger = LoggerFactory.getLogger(IndexBuilder.class);
 
@@ -108,13 +108,26 @@ public class IndexBuilder {
 	 */
 	private XContentBuilder getIndexSetting(){
 		XContentBuilder settingbuilder = null;
+		//TODO: fix the document type here.
 		try {
 			settingbuilder = XContentFactory.jsonBuilder()
 					.startObject()
 					.field("index", indexName)
-					.field("type",documentType)
+					.field("type","weibo")
 						.startObject("body")
-							.startObject(documentType)
+							.startObject("weibo")
+								.startObject("properties")
+									.startObject("text")
+									.field("type","string")
+									.field("analyzer", "ik_syno_smart")
+									.field("search_analyzer", "ik_syno_smart")
+									.endObject()
+								.endObject()
+							.endObject()
+						.endObject()
+						.field("type","loft")
+						.startObject("body")
+							.startObject("loft")
 								.startObject("properties")
 									.startObject("text")
 									.field("type","string")
@@ -135,7 +148,7 @@ public class IndexBuilder {
 	}
 	
 
-	public void addDoc(String json) throws IOException, CloneNotSupportedException, MPException {
+	public void addDoc(String type, String json) throws IOException, CloneNotSupportedException, MPException {
 
 		Client client = getClient();
 
@@ -156,7 +169,7 @@ public class IndexBuilder {
 			throw new MPException(ErrCode.Text_Chatter, "text is chatter. text:" + newWeibo.getText());
 		}
 		
-		IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, documentType,newWeibo.getMid());
+		IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, type,newWeibo.getMid());
 		indexRequestBuilder.setSource(newWeibo.toMap());
 		indexRequestBuilder.execute().actionGet();
 		
@@ -170,7 +183,7 @@ public class IndexBuilder {
 	public void readDoc() {
 		// Get document according to id
 		Client client = getClient();
-		GetRequestBuilder getRequestBuilder = client.prepareGet(indexName, documentType, null);
+		GetRequestBuilder getRequestBuilder = client.prepareGet(indexName, null, null);
 		// getRequestBuilder.setFields(new String[]{"name"});
 		GetResponse response = getRequestBuilder.execute().actionGet();
 		String name = response.getField("name").getValue().toString();
