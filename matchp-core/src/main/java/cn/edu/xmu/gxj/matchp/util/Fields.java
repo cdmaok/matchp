@@ -16,6 +16,8 @@ public class Fields {
 	public static final String polarity = "polarity";	
 	public static final String imgSign = "imgSign";
 	public static final String doc_id = "doc_id";
+	public static final String imgSize = "imgSize";
+	
 	
 	public static enum Type{
 		WEIBO("weibo"),

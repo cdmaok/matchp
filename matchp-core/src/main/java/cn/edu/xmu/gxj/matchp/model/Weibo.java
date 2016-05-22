@@ -11,7 +11,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
-
+@Deprecated
 public class Weibo implements Cloneable{
 	
 	private Weibo() {}

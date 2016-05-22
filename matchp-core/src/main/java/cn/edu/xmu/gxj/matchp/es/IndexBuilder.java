@@ -16,7 +16,6 @@ import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -32,13 +31,12 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
+import cn.edu.xmu.gxj.matchp.model.Doc;
+import cn.edu.xmu.gxj.matchp.model.DocFactory;
 import cn.edu.xmu.gxj.matchp.model.Entry;
-import cn.edu.xmu.gxj.matchp.model.Weibo;
-import cn.edu.xmu.gxj.matchp.plugins.ImageSign;
 import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
 import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
 import cn.edu.xmu.gxj.matchp.score.ScoreComparator;
-import cn.edu.xmu.gxj.matchp.util.ErrCode;
 import cn.edu.xmu.gxj.matchp.util.Fields;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
@@ -53,7 +51,8 @@ public class IndexBuilder {
 	private Sentiment sent;
 	
 	@Autowired
-	private ImageSign signSever;
+	private DocFactory docfactory;
+
 	
 	@Autowired
 	private EntryBuilder entryBuilder;
@@ -69,6 +68,7 @@ public class IndexBuilder {
 	public void init(){
 		settings = Settings.settingsBuilder()
 		        .put("cluster.name", matchpconfig.getEsClusterName()).build();
+		
 		createIndex();
 	}
 
@@ -113,18 +113,18 @@ public class IndexBuilder {
 			settingbuilder = XContentFactory.jsonBuilder()
 					.startObject()
 					.field("index", indexName)
-					.field("type","weibo")
-						.startObject("body")
-							.startObject("weibo")
-								.startObject("properties")
-									.startObject("text")
-									.field("type","string")
-									.field("analyzer", "ik_syno_smart")
-									.field("search_analyzer", "ik_syno_smart")
-									.endObject()
-								.endObject()
-							.endObject()
-						.endObject()
+//					.field("type","weibo")
+//						.startObject("body")
+//							.startObject("weibo")
+//								.startObject("properties")
+//									.startObject("text")
+//									.field("type","string")
+//									.field("analyzer", "ik_syno_smart")
+//									.field("search_analyzer", "ik_syno_smart")
+//									.endObject()
+//								.endObject()
+//							.endObject()
+//						.endObject()
 						.field("type","loft")
 						.startObject("body")
 							.startObject("loft")
@@ -148,32 +148,28 @@ public class IndexBuilder {
 	}
 	
 
-	public void addDoc(String type, String json) throws IOException, CloneNotSupportedException, MPException {
+	public void addDoc(String type, String json){
 
 		Client client = getClient();
 
-
-		Gson gson = new Gson();
-		Weibo weibo = gson.fromJson(json, Weibo.class);
-		Weibo newWeibo = Weibo.build(weibo);
-		newWeibo.setPolarity(sent.getSentiment(newWeibo.getText()));
-		newWeibo.setImgSignature(signSever.getSignature(newWeibo.getImg_url()));
+// change to doc
+//		Gson gson = new Gson();
+//		Weibo weibo = gson.fromJson(json, Weibo.class);
+//		Weibo newWeibo = Weibo.build(weibo);
+//		newWeibo.setPolarity(sent.getSentiment(newWeibo.getText()));
+//		newWeibo.setImgSignature(signSever.getSignature(newWeibo.getImg_url()));
 		
-		if(matchpconfig.isCheck_img() && newWeibo.isNotFound()){
+		try {
+			Doc document = docfactory.Build(json);
+			IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, type , document.getDoc_id());
+			indexRequestBuilder.setSource(document.getContent());
+			indexRequestBuilder.execute().actionGet();
+		} catch (MPException e) {
+			e.printStackTrace();
+		} finally {
 			client.close();
-			throw new MPException(ErrCode.Image_Not_Found, "Image Not found. url:" + newWeibo.getImg_url());
 		}
 		
-		if(matchpconfig.isCheck_chatter() && newWeibo.isChatter()){
-			client.close();
-			throw new MPException(ErrCode.Text_Chatter, "text is chatter. text:" + newWeibo.getText());
-		}
-		
-		IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, type,newWeibo.getMid());
-		indexRequestBuilder.setSource(newWeibo.toMap());
-		indexRequestBuilder.execute().actionGet();
-		
-		client.close();
 	}
 
 
@@ -209,10 +205,7 @@ public class IndexBuilder {
 			Map<String, Object> result = hit.getSource();
 			Entry entry = entryBuilder.buildEntry(querySenti, result, hit.getScore());
 			//TODO: this de-duplication is ugly.
-			String sign = (String) result.get("signature");
-			if (sign == null) {
-				sign = signSever.getSignature(entry.getUrl());
-			}
+			String sign = (String) result.get(Fields.imgSign);
 			if (!signs.contains(sign)) {
 				resultList.add(entry);
 				signs.add(sign);
@@ -241,6 +234,14 @@ public class IndexBuilder {
 
 	public void setEntryBuilder(EntryBuilder entryBuilder) {
 		this.entryBuilder = entryBuilder;
+	}
+
+	public DocFactory getDocfactory() {
+		return docfactory;
+	}
+
+	public void setDocfactory(DocFactory docfactory) {
+		this.docfactory = docfactory;
 	}
 
 	

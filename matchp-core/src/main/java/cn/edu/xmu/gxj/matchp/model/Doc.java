@@ -3,6 +3,8 @@ package cn.edu.xmu.gxj.matchp.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.elasticsearch.action.percolate.PercolateSourceBuilder.DocBuilder;
+
 import cn.edu.xmu.gxj.matchp.util.ErrCode;
 import cn.edu.xmu.gxj.matchp.util.Fields;
 import cn.edu.xmu.gxj.matchp.util.JsonUtility;
@@ -10,32 +12,61 @@ import cn.edu.xmu.gxj.matchp.util.MPException;
 
 public class Doc {
 	
-	private HashMap<String, Object> content;
+	
+	private HashMap<String, Object> content; // include all the field
+	private String text;
+	private String img;
+	private String doc_id;
 
-	public Doc(String json) throws MPException{
-		this(JsonUtility.json2Map(json));
+	public String getDoc_id() {
+		return doc_id;
 	}
-	
-	
-	public Doc(Map<String, Object> map) throws MPException{
-		if(checkMap(map)){
-			this.content = (HashMap<String, Object>) map;
-		}
-		
+
+	public void setDoc_id(String doc_id) {
+		this.doc_id = doc_id;
 	}
-	
+
 	/*
-	 * check the input has the necessary field or not
+	 * use DocFactory to init doc.
 	 */
-	private static boolean checkMap(Map<String, Object> map) throws MPException{
-		String[] checkList = new String[]{Fields.text,Fields.img,Fields.doc_id};
-		for (int i = 0; i < checkList.length; i++) {
-			String field = checkList[i];
-			if (!map.containsKey(field)) {
-				throw new MPException(ErrCode.Empty_Field, "no " + field + " founded ");
-			} 
-		}
-		return true;
+	private Doc(){}
+	
+	protected Doc(Map<String, Object> map) throws MPException{
+		this.content = (HashMap<String, Object>) map;
+		this.text = (String) map.get(Fields.text);
+		this.img = (String) map.get(Fields.img);
+		this.doc_id = (String) map.get(Fields.doc_id);
 	}
+
+
+	public HashMap<String, Object> getContent() {
+		return content;
+	}
+
+
+	public void setContent(HashMap<String, Object> content) {
+		this.content = content;
+	}
+
+
+	public String getText() {
+		return text;
+	}
+
+
+	public void setText(String text) {
+		this.text = text;
+	}
+
+
+	public String getImg() {
+		return img;
+	}
+
+
+	public void setImg(String img) {
+		this.img = img;
+	}
+	
 	
 }
