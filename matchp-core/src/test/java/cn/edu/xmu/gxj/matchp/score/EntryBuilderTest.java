@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.elasticsearch.search.SearchHit;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,6 +28,9 @@ public class EntryBuilderTest {
 	@Mock
 	private Sentiment sent;
 	
+	@Mock
+	private SearchHit hit;
+	
 	@InjectMocks
 	private EntryBuilder builder;
 	
@@ -34,19 +38,23 @@ public class EntryBuilderTest {
 
 	@Before
 	public void SetUp() {
-		when(config.isSentiment_enable()).thenReturn(true);
-		when(sent.getSentiment(test)).thenReturn(0.5f);
-	}
-	
-	@Test
-	public void test(){
 		Map<String, Object> map = new HashMap<>();
 		map.put(Fields.polarity, 0.34);
 		map.put(Fields.text, "abc");
 		map.put(Fields.img, "abc");
-		float hit = 0.45f;
-		Entry entry = builder.buildEntry(0.5,	 map, hit);
-		assertEquals( 1 - (0.5-0.34) + hit, entry.getScore(), 0.01);
+		float ir_score = 0.45f;
+		when(config.isSentiment_enable()).thenReturn(true);
+		when(sent.getSentiment(test)).thenReturn(0.5f);
+		when(hit.getScore()).thenReturn(ir_score);
+		when(hit.getSource()).thenReturn(map);
+		when(hit.getType()).thenReturn("loft");
+	}
+	
+	@Test
+	public void test(){
+
+		Entry entry = builder.buildEntry(0.5,hit);
+		assertEquals( 1 - (0.5-0.34) + 0.45f + 1, entry.getScore(), 0.01);
 	}
 
 }

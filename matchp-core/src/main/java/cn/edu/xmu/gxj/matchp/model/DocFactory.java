@@ -76,7 +76,7 @@ public class DocFactory {
 			response.close();
 			Pic pic = new Pic(url);
 			double size = pic.getWidth() / pic.getHeight();
-			map.put(Fields.imgSign, size);
+			map.put(Fields.imgSize, size);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

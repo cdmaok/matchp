@@ -29,10 +29,6 @@ public class IndexImpl implements IndexAPI {
 		}
 		try {
 			indexBuilder.addDoc(type,text);
-		} catch (IOException | CloneNotSupportedException e) {
-			e.printStackTrace();
-			Reply reply = new Reply(e.getMessage(), ErrCode.System_Failed);
-			return Response.ok(new Gson().toJson(reply), MediaType.APPLICATION_JSON).build();
 		}  catch (MPException e1) {
 			e1.printStackTrace();
 			Reply reply = new Reply(e1.getMessage(),e1.getCode());

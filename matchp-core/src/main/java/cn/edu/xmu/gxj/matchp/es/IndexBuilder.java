@@ -148,7 +148,7 @@ public class IndexBuilder {
 	}
 	
 
-	public void addDoc(String type, String json){
+	public void addDoc(String type, String json) throws MPException{
 
 		Client client = getClient();
 
@@ -164,8 +164,10 @@ public class IndexBuilder {
 			IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, type , document.getDoc_id());
 			indexRequestBuilder.setSource(document.getContent());
 			indexRequestBuilder.execute().actionGet();
+			//TODO: check response here
 		} catch (MPException e) {
 			e.printStackTrace();
+			throw e;
 		} finally {
 			client.close();
 		}
@@ -203,7 +205,7 @@ public class IndexBuilder {
 		HashSet<String> signs = new HashSet<>();
 		for (SearchHit hit : results) {
 			Map<String, Object> result = hit.getSource();
-			Entry entry = entryBuilder.buildEntry(querySenti, result, hit.getScore());
+			Entry entry = entryBuilder.buildEntry(querySenti, hit);
 			//TODO: this de-duplication is ugly.
 			String sign = (String) result.get(Fields.imgSign);
 			if (!signs.contains(sign)) {

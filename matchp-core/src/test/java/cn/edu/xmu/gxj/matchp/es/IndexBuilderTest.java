@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -25,6 +28,7 @@ import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.plugins.ImageSign;
 import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
 import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
+import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;  
 
 @RunWith(MockitoJUnitRunner.class)
@@ -64,9 +68,39 @@ public class IndexBuilderTest {
 	}
 	
 	@Test
-	public void testaddLoft(){
+	public void testLoft(){
 		String type = "loft";
-		builder.addDoc(type, DocFactoryTest.case1);
+		try {
+			builder.addDoc(type, DocFactoryTest.case1);
+			String query = "scars scars ";
+			String result = builder.searchDoc(query);
+			
+			TypeToken<List<Entry>> token = new TypeToken<List<Entry>>() {};
+			ArrayList<Entry> resultList = new Gson().fromJson(result, token.getType());
+			assertTrue(resultList.size() >= 1);
+			
+		} catch (MPException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testLoftChinese(){
+		String type = "loft";
+		try {
+			builder.addDoc(type, DocFactoryTest.case2);
+			String query = "拐弯抹角  软语";
+			String result = builder.searchDoc(query);
+			
+			TypeToken<List<Entry>> token = new TypeToken<List<Entry>>() {};
+			ArrayList<Entry> resultList = new Gson().fromJson(result, token.getType());
+			assertTrue(resultList.size() >= 1);
+			
+		} catch (MPException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
 	}
 	
 
