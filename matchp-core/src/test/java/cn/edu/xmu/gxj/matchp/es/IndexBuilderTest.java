@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,27 +17,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
+import cn.edu.xmu.gxj.matchp.model.DocFactory;
+import cn.edu.xmu.gxj.matchp.model.DocFactoryTest;
 import cn.edu.xmu.gxj.matchp.model.Entry;
+import cn.edu.xmu.gxj.matchp.plugins.ImageSign;
 import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
 import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
+import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;  
 
 @RunWith(MockitoJUnitRunner.class)
 public class IndexBuilderTest {
-
-	static String str = "{\"comment_no\": \"0\", "
-			+ "\"text\": \"tomorrow is another day . http://ww1.sinaimg.cn/wap128/a033dfefjw1efzm1oluakj20dc0hstae.jpg\", "
-			+ "\"uid\": \"2687754223\", "
-			+ "\"like_no\": \"0\", "
-			+ "\"rt_no\": \"0\",\"mid\":\"123456\"}";
-	
-	static String chineStr = "{\"rt_no\": \"0\", "
-			+ "\"like_no\": \"0\", \"text\": "
-			+ "\"好久没有主持过全场婚礼了>，虚脱http://ww1.sinaimg.cn/wap128/83a4f8cdjw1eg09yxmlrjj20x718gn9k.jpg\","
-			+ " \"mid\": \"3705901208373296\", \"comment_no\": \"0\", \"uid\": \"2208626893\"}";
 
 	
 	@Mock
@@ -45,56 +41,66 @@ public class IndexBuilderTest {
 	@Mock
 	Sentiment sent;
 	
+	@Mock
+	ImageSign signServer;
+	
 	@InjectMocks
 	EntryBuilder entryBuilder;
 	
 	@InjectMocks
 	IndexBuilder builder;
 	
+	@InjectMocks
+	DocFactory factory;
+	
 	@Before
 	public void setUp(){
 		
 		when(config.getEsClusterName()).thenReturn("elasticsearch");
-		when(config.getEsHostName()).thenReturn("127.0.0.1");
+		when(config.getEsHostName()).thenReturn("121.192.180.198");
 		when(config.getEsTimeout()).thenReturn(5000L);
 		when(config.isSentiment_enable()).thenReturn(false);
 		when(sent.getSentiment(any(String.class))).thenReturn(0.5f);
+		when(signServer.getSignature(any(String.class))).thenReturn("abcdefg");
 		builder.init();
 		builder.setEntryBuilder(entryBuilder);
+		builder.setDocfactory(factory);
 	}
 	
 	@Test
-	public void addIndexAndQuery(){
-
+	public void testLoft(){
+		String type = "loft";
 		try {
-			builder.addDoc(str);
-			String ret = builder.searchDoc("another");
+			builder.addDoc(type, DocFactoryTest.case1);
+			String query = "scars scars ";
+			String result = builder.searchDoc(query);
+			
 			TypeToken<List<Entry>> token = new TypeToken<List<Entry>>() {};
-			ArrayList<Entry> results = new Gson().fromJson(ret, token.getType());
-			assertTrue(results.size() >= 1);
-			assertEquals(1, results.size(), 0);
-
-		} catch (Exception e) {
+			ArrayList<Entry> resultList = new Gson().fromJson(result, token.getType());
+			assertTrue(resultList.size() >= 1);
+			
+		} catch (MPException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		} 
+		}
 	}
 	
-	
 	@Test
-	public void addChineseIndexAndQuery(){
-
+	public void testLoftChinese(){
+		String type = "loft";
 		try {
-			builder.addDoc(chineStr);
-			String ret = builder.searchDoc("好久 主持");
+			builder.addDoc(type, DocFactoryTest.case2);
+			String query = "拐弯抹角  软语";
+			String result = builder.searchDoc(query);
+			
 			TypeToken<List<Entry>> token = new TypeToken<List<Entry>>() {};
-			ArrayList<Entry> results = new Gson().fromJson(ret, token.getType());
-			assertTrue(results.size() >= 1);
-			System.out.println(results.get(0));
-		} catch (Exception e) {
+			ArrayList<Entry> resultList = new Gson().fromJson(result, token.getType());
+			assertTrue(resultList.size() >= 1);
+			
+		} catch (MPException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-		} 
+		}
 	}
 	
 

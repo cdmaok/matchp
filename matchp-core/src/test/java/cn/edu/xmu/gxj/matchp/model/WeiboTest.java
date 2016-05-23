@@ -12,14 +12,14 @@ import com.google.gson.Gson;
 public class WeiboTest {
 
 	public static String normal_weibo = "{\"comment_no\": \"0\", "
-			+ "\"text\": \"今天起来得早吧～我都出去一趟回来老。早起的鸟儿有虫吃[鼓掌][鼓掌]懒猪们 ，早安 [呲牙][太阳]http://ww1.sinaimg.cn/wap128/a033dfefjw1efzm1oluakj20dc0hstae.jpg\", "
+			+ "\"text\": \"浠婂ぉ璧锋潵寰楁棭鍚э綖鎴戦兘鍑哄幓涓�瓒熷洖鏉ヨ�併�傛棭璧风殑楦熷効鏈夎櫕鍚僛榧撴帉][榧撴帉]鎳掔尓浠� 锛屾棭瀹� [鍛茬墮][澶槼]http://ww1.sinaimg.cn/wap128/a033dfefjw1efzm1oluakj20dc0hstae.jpg\", "
 			+ "\"uid\": \"2687754223\", "
 			+ "\"like_no\": \"0\", "
 			+ "\"rt_no\": \"0\"}";
 	
 	
 	public static String url_weibo = "{\"rt_no\": \"0\", \"like_no\": \"0\", "
-			+ "\"text\": \"从今天开始，写下我的 #小红书购物笔记# ，从今天开始，不遗忘妆点自己最好年华的点点滴滴，从今天>开始，和地球某处的朋友一起探索世间好物。2014，和我一起，点击 http://t.cn/8FnP0Mnhttp://ww1.sinaimg.cn/wap128/6b63135ajw1edtthpmwb9j20z00z0kbx.jpg\", "
+			+ "\"text\": \"浠庝粖澶╁紑濮嬶紝鍐欎笅鎴戠殑 #灏忕孩涔﹁喘鐗╃瑪璁�# 锛屼粠浠婂ぉ寮�濮嬶紝涓嶉仐蹇樺鐐硅嚜宸辨渶濂藉勾鍗庣殑鐐圭偣婊存淮锛屼粠浠婂ぉ>寮�濮嬶紝鍜屽湴鐞冩煇澶勭殑鏈嬪弸涓�璧锋帰绱笘闂村ソ鐗┿��2014锛屽拰鎴戜竴璧凤紝鐐瑰嚮 http://t.cn/8FnP0Mnhttp://ww1.sinaimg.cn/wap128/6b63135ajw1edtthpmwb9j20z00z0kbx.jpg\", "
 			+ "\"mid\": \"3681307966339621\", \"comment_no\": \"0\", \"uid\": \"1801655130\"}";
 	
 	@Test
@@ -31,7 +31,7 @@ public class WeiboTest {
 			Weibo newWeibo =  Weibo.build(weibo);
 			assertTrue("The new weibo is not null", newWeibo != null);
 			assertEquals(newWeibo.getImg_url(), "http://ww1.sinaimg.cn/wap128/a033dfefjw1efzm1oluakj20dc0hstae.jpg");
-			assertEquals(newWeibo.getText(), "今天起来得早吧～我都出去一趟回来老。早起的鸟儿有虫吃[鼓掌][鼓掌]懒猪们 ，早安 [呲牙][太阳]");
+			assertEquals(newWeibo.getText(), "浠婂ぉ璧锋潵寰楁棭鍚э綖鎴戦兘鍑哄幓涓�瓒熷洖鏉ヨ�併�傛棭璧风殑楦熷効鏈夎櫕鍚僛榧撴帉][榧撴帉]鎳掔尓浠� 锛屾棭瀹� [鍛茬墮][澶槼]");
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());
@@ -47,7 +47,7 @@ public class WeiboTest {
 			Weibo newWeibo =  Weibo.build(weibo);
 			assertTrue("The new weibo is not null", newWeibo != null);
 			assertEquals(newWeibo.getImg_url(), "http://ww1.sinaimg.cn/wap128/6b63135ajw1edtthpmwb9j20z00z0kbx.jpg");
-			assertEquals(newWeibo.getText(), "从今天开始，写下我的 #小红书购物笔记# ，从今天开始，不遗忘妆点自己最好年华的点点滴滴，从今天>开始，和地球某处的朋友一起探索世间好物。2014，和我一起，点击 http://t.cn/8FnP0Mn");
+			assertEquals(newWeibo.getText(), "浠庝粖澶╁紑濮嬶紝鍐欎笅鎴戠殑 #灏忕孩涔﹁喘鐗╃瑪璁�# 锛屼粠浠婂ぉ寮�濮嬶紝涓嶉仐蹇樺鐐硅嚜宸辨渶濂藉勾鍗庣殑鐐圭偣婊存淮锛屼粠浠婂ぉ>寮�濮嬶紝鍜屽湴鐞冩煇澶勭殑鏈嬪弸涓�璧锋帰绱笘闂村ソ鐗┿��2014锛屽拰鎴戜竴璧凤紝鐐瑰嚮 http://t.cn/8FnP0Mn");
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail(e.getMessage());

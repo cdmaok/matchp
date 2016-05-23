@@ -13,6 +13,7 @@ User can input the text and get matching picture both through UI interface and r
 2. put the war package into the tomcat.
 3. reconfig the property
 4. start the tomcat service.
+5. (optional) you may need to deploy another program named ![matchpService](https://github.com/cdmaok/matchp-service)
 
 ## Simple Note  
 The project is based on spring framework and elastic Search, which is organized as several modules.
@@ -21,4 +22,16 @@ matchp-web: program web interface
 matchp-api: program's rest api.
 
 ## TODOLIST
-1. Image de-duplication (Finished)
+1. Image de-duplication (Finished)    
+2. Learing to Rank (not yet)  
+3. Adapting to multiple source data (not yet)  
+
+## Index Field Declaration    
+text: just text as you know    
+polarity: text's sentiment  
+img: image's url  
+imgSign: image's signature  
+doc_id: text's id  
+
+
+

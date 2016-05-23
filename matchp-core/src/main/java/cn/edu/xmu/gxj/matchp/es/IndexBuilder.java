@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -19,6 +20,8 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
@@ -28,13 +31,13 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
+import cn.edu.xmu.gxj.matchp.model.Doc;
+import cn.edu.xmu.gxj.matchp.model.DocFactory;
 import cn.edu.xmu.gxj.matchp.model.Entry;
-import cn.edu.xmu.gxj.matchp.model.Weibo;
-import cn.edu.xmu.gxj.matchp.plugins.ImageSign;
 import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
 import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
 import cn.edu.xmu.gxj.matchp.score.ScoreComparator;
-import cn.edu.xmu.gxj.matchp.util.ErrCode;
+import cn.edu.xmu.gxj.matchp.util.Fields;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
@@ -48,7 +51,8 @@ public class IndexBuilder {
 	private Sentiment sent;
 	
 	@Autowired
-	private ImageSign signSever;
+	private DocFactory docfactory;
+
 	
 	@Autowired
 	private EntryBuilder entryBuilder;
@@ -64,6 +68,8 @@ public class IndexBuilder {
 	public void init(){
 		settings = Settings.settingsBuilder()
 		        .put("cluster.name", matchpconfig.getEsClusterName()).build();
+		
+		createIndex();
 	}
 
 	private Client getClient(){
@@ -81,38 +87,91 @@ public class IndexBuilder {
 	
 	
 	static String indexName = "matchp";
-	static String documentType = "weibo";
-	static String idField = "mid";
+	static String idField = "doc_id";
 
 	static final Logger logger = LoggerFactory.getLogger(IndexBuilder.class);
 
+	private void createIndex(){
+		Client client = getClient();
+		boolean exist = client.admin().indices().prepareExists(indexName).execute().actionGet().isExists();
+		if (!exist) {
+			CreateIndexRequestBuilder builder = client.admin().indices().prepareCreate(indexName).setSettings(getIndexSetting());
+			builder.execute().actionGet();
+		}else {
+			logger.info("{} already exist, skip create index",indexName);
+			client.close();
+		}
+	}
+	
+	/*
+	 * generate the index settings
+	 */
+	private XContentBuilder getIndexSetting(){
+		XContentBuilder settingbuilder = null;
+		//TODO: fix the document type here.
+		try {
+			settingbuilder = XContentFactory.jsonBuilder()
+					.startObject()
+					.field("index", indexName)
+//					.field("type","weibo")
+//						.startObject("body")
+//							.startObject("weibo")
+//								.startObject("properties")
+//									.startObject("text")
+//									.field("type","string")
+//									.field("analyzer", "ik_syno_smart")
+//									.field("search_analyzer", "ik_syno_smart")
+//									.endObject()
+//								.endObject()
+//							.endObject()
+//						.endObject()
+						.field("type","loft")
+						.startObject("body")
+							.startObject("loft")
+								.startObject("properties")
+									.startObject("text")
+									.field("type","string")
+									.field("analyzer", "ik_syno_smart")
+									.field("search_analyzer", "ik_syno_smart")
+									.endObject()
+								.endObject()
+							.endObject()
+						.endObject()
+					.endObject();
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.info("create index setting failure, reason:{}",e.getMessage());
+		}
+		
+		return settingbuilder;
+				
+	}
+	
 
-	public void addDoc(String json) throws IOException, CloneNotSupportedException, MPException {
+	public void addDoc(String type, String json) throws MPException{
 
 		Client client = getClient();
 
-
-		Gson gson = new Gson();
-		Weibo weibo = gson.fromJson(json, Weibo.class);
-		Weibo newWeibo = Weibo.build(weibo);
-		newWeibo.setPolarity(sent.getSentiment(newWeibo.getText()));
-		newWeibo.setImgSignature(signSever.getSignature(newWeibo.getImg_url()));
+// change to doc
+//		Gson gson = new Gson();
+//		Weibo weibo = gson.fromJson(json, Weibo.class);
+//		Weibo newWeibo = Weibo.build(weibo);
+//		newWeibo.setPolarity(sent.getSentiment(newWeibo.getText()));
+//		newWeibo.setImgSignature(signSever.getSignature(newWeibo.getImg_url()));
 		
-		if(matchpconfig.isCheck_img() && newWeibo.isNotFound()){
+		try {
+			Doc document = docfactory.Build(json);
+			IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, type , document.getDoc_id());
+			indexRequestBuilder.setSource(document.getContent());
+			indexRequestBuilder.execute().actionGet();
+			//TODO: check response here
+		} catch (MPException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
 			client.close();
-			throw new MPException(ErrCode.Image_Not_Found, "Image Not found. url:" + newWeibo.getImg_url());
 		}
 		
-		if(matchpconfig.isCheck_chatter() && newWeibo.isChatter()){
-			client.close();
-			throw new MPException(ErrCode.Text_Chatter, "text is chatter. text:" + newWeibo.getText());
-		}
-		
-		IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, documentType,newWeibo.getMid());
-		indexRequestBuilder.setSource(newWeibo.toMap());
-		indexRequestBuilder.execute().actionGet();
-		
-		client.close();
 	}
 
 
@@ -122,7 +181,7 @@ public class IndexBuilder {
 	public void readDoc() {
 		// Get document according to id
 		Client client = getClient();
-		GetRequestBuilder getRequestBuilder = client.prepareGet(indexName, documentType, null);
+		GetRequestBuilder getRequestBuilder = client.prepareGet(indexName, null, null);
 		// getRequestBuilder.setFields(new String[]{"name"});
 		GetResponse response = getRequestBuilder.execute().actionGet();
 		String name = response.getField("name").getValue().toString();
@@ -135,8 +194,8 @@ public class IndexBuilder {
 		
 		long queryStart = System.currentTimeMillis();
 		// we change search type to 'query then fetch' from 'query and fetch',otherwise it will ignore the limit size.
-		SearchResponse response = client.prepareSearch(indexName).setTypes(documentType).setSearchType(SearchType.QUERY_THEN_FETCH)
-		.setQuery(QueryBuilders.matchQuery("text", query)).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
+		SearchResponse response = client.prepareSearch(indexName).setSearchType(SearchType.QUERY_THEN_FETCH)
+		.setQuery(QueryBuilders.matchQuery("text", query).analyzer("ik_syno")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 
 		long queryEnd = System.currentTimeMillis();
 		double querySenti = sent.getSentiment(query);
@@ -146,12 +205,9 @@ public class IndexBuilder {
 		HashSet<String> signs = new HashSet<>();
 		for (SearchHit hit : results) {
 			Map<String, Object> result = hit.getSource();
-			Entry entry = entryBuilder.buildEntry(querySenti, result, hit.getScore());
+			Entry entry = entryBuilder.buildEntry(querySenti, hit);
 			//TODO: this de-duplication is ugly.
-			String sign = (String) result.get("signature");
-			if (sign == null) {
-				sign = signSever.getSignature(entry.getUrl());
-			}
+			String sign = (String) result.get(Fields.imgSign);
 			if (!signs.contains(sign)) {
 				resultList.add(entry);
 				signs.add(sign);
@@ -180,6 +236,14 @@ public class IndexBuilder {
 
 	public void setEntryBuilder(EntryBuilder entryBuilder) {
 		this.entryBuilder = entryBuilder;
+	}
+
+	public DocFactory getDocfactory() {
+		return docfactory;
+	}
+
+	public void setDocfactory(DocFactory docfactory) {
+		this.docfactory = docfactory;
 	}
 
 	

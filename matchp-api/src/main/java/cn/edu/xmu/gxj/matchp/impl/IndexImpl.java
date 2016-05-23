@@ -23,12 +23,12 @@ public class IndexImpl implements IndexAPI {
 	private IndexBuilder indexBuilder;
 	
 	public Response AddIndex(String type,String text) {
+		if(type == null){
+			Reply notype = new Reply("you need to specify the doc type, loft or weibo", ErrCode.Invalid_Request);
+			return Response.ok(new Gson().toJson(notype),MediaType.APPLICATION_JSON).build();
+		}
 		try {
-			indexBuilder.addDoc(text);
-		} catch (IOException | CloneNotSupportedException e) {
-			e.printStackTrace();
-			Reply reply = new Reply(e.getMessage(), ErrCode.System_Failed);
-			return Response.ok(new Gson().toJson(reply), MediaType.APPLICATION_JSON).build();
+			indexBuilder.addDoc(type,text);
 		}  catch (MPException e1) {
 			e1.printStackTrace();
 			Reply reply = new Reply(e1.getMessage(),e1.getCode());
