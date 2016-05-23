@@ -31,7 +31,7 @@ def fetch_weibo(url,text):
 if __name__ == '__main__':
 	if len(sys.argv) != 2:
 		print 'need a file.'
-		exit;
+		sys.exit()
 	else:
 		filepath = sys.argv[1]
 		if not os.path.exists(filepath):

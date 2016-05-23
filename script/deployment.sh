@@ -6,7 +6,7 @@ TOMCAT_HOME=/usr/local/apache-tomcat-7.0.27
 cd $MP_HOME
 git pull origin master
 mvn clean package
-if [ 0 -eq $?]; then
+if [ 0 -eq $? ]; then
 	echo "build successfully"
 else
 	echo "something was wrong."
