@@ -66,6 +66,9 @@ public class DocFactory {
 
 	private  boolean checkImgExistAddSize(Map<String, Object> map) throws MPException {
 		String url = (String) map.get(Fields.img);
+		if (url.trim().equals("")) {
+			throw new MPException(ErrCode.Image_Not_Found, "Image Not found. url:" + url);
+		}
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(url);
 		CloseableHttpResponse response = null;
