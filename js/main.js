@@ -54,6 +54,13 @@ $(function() {
     });
   });
 
+  $('#query-text').on('keydown', function (e) {
+    if (e.keyCode == 13) {
+        e.preventDefault();
+        $('#submit').trigger('click');
+    }
+  });
+
   $preBtn.on('click', function() {
     var curIndex = +$pageIndex.text() - 1;
     $pageIndex.text(--curIndex + 1);
@@ -78,10 +85,8 @@ $(function() {
     $resultCount.text(gTotalData.length);
 
     gPageNum = (Math.ceil(gTotalData.length / options.imgsRow / options.imgsCol));
-    if (gPageNum > 1) {
-      $pager.removeClass('hidden');
-      $pageNum.text((Math.ceil(gTotalData.length / options.imgsRow / options.imgsCol)));
-    }
+    $pageNum.text(gPageNum);
+    $pager.toggleClass('hidden', gPageNum < 2);
 
     showImgsPage(0, 0);
   }
