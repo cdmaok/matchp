@@ -221,7 +221,7 @@ public class IndexBuilder {
 		long sortStart = System.currentTimeMillis();
 		Collections.sort(resultList, new ScoreComparator());
 		long sortEnd = System.currentTimeMillis();
-		logger.info("query:{}, using time: query = {}ms, merge = {}ms, sort = {}ms, total = {}ms, result",
+		logger.info("query:{}, using time: query = {}ms, merge = {}ms, sort = {}ms, total = {}ms, result:{}",
 				query, queryEnd - queryStart, mergeEnd - mergeStart, sortEnd - sortStart, sortEnd - queryStart, resultList.size());
 		client.close();
 		return new Gson().toJson(resultList);
