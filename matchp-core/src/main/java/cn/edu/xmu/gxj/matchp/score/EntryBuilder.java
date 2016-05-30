@@ -67,7 +67,7 @@ public class EntryBuilder {
 		map.put(TypeScore, typeScore);
 		map.put(IrScore, irScore);
 		map.put(SentiScore, sentiScore);
-		map.put(FinScore, FinScore);
+		map.put(FinScore, score);
 		
 		return map;
 	}
