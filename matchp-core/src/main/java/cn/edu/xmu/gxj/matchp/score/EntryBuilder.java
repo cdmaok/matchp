@@ -48,6 +48,7 @@ public class EntryBuilder {
 			break;
 		case "weibo":
 			typeScore = 0.5;
+			break;
 		default:
 			typeScore = 0;
 			break;

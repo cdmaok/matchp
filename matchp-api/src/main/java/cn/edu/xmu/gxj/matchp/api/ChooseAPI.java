@@ -17,6 +17,6 @@ public interface ChooseAPI {
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	Response Prefer(String type);
+	Response Prefer(String json);
 	
 }

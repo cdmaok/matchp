@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.PostConstruct;
 
@@ -154,6 +155,7 @@ public class IndexBuilder {
 
 // change to doc
 //		Gson gson = new Gson();
+		
 //		Weibo weibo = gson.fromJson(json, Weibo.class);
 //		Weibo newWeibo = Weibo.build(weibo);
 //		newWeibo.setPolarity(sent.getSentiment(newWeibo.getText()));
@@ -222,9 +224,39 @@ public class IndexBuilder {
 		Collections.sort(resultList, new ScoreComparator());
 		long sortEnd = System.currentTimeMillis();
 		logger.info("query:{}, using time: query = {}ms, merge = {}ms, sort = {}ms, total = {}ms, result:{}",
-				query, queryEnd - queryStart, mergeEnd - mergeStart, sortEnd - sortStart, sortEnd - queryStart, resultList.size());
+				query, queryEnd - queryStart, mergeEnd - mergeStart, sortEnd - sortStart, queryEnd - queryStart, resultList.size());
 		client.close();
 		return new Gson().toJson(resultList);
+	}
+	
+	
+	public ArrayList<String> randomDoc(String query) {
+		Client client = getClient();
+		
+		// we change search type to 'query then fetch' from 'query and fetch',otherwise it will ignore the limit size.
+		SearchResponse response = client.prepareSearch(indexName).setSearchType(SearchType.QUERY_THEN_FETCH)
+		.setQuery(QueryBuilders.matchQuery("text", query).analyzer("ik_syno")).setFrom(0).setSize(10).setExplain(true).execute().actionGet();
+
+		double querySenti = sent.getSentiment(query);
+		SearchHit[] results = response.getHits().getHits();
+		ArrayList<String> resultList = new ArrayList<String>();
+		HashSet<String> signs = new HashSet<>();
+		Random random = new Random();
+		while (resultList.size() != 2) {
+			int index = random.nextInt(results.length);
+			SearchHit hit =  results[index];
+			Map<String, Object> result = hit.getSource();
+			String pick = entryBuilder.buildJson(querySenti, hit);
+			String sign = (String) result.get(Fields.imgSign);
+			if (!signs.contains(sign)) {
+				resultList.add(pick);
+				signs.add(sign);
+			}else{
+				logger.debug("find the duplicated one. sign is {}, url is {}", sign,(String) result.get(Fields.img));
+			}
+		}
+		client.close();
+		return resultList;
 	}
 
 	/*

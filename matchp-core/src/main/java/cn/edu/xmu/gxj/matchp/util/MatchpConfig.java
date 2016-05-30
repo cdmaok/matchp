@@ -34,6 +34,9 @@ public class MatchpConfig {
 	private final boolean image_sign_enable;
 	private final String image_sign_server;
 	
+	private final String querySet;
+	private final String labelFile;
+	
 	public MatchpConfig() {
 		try {
 			String filepath = getPath();
@@ -67,6 +70,9 @@ public class MatchpConfig {
 		
 		this.image_sign_enable = Boolean.parseBoolean(configOrDefault("IMAGE_SIGN_ENABLE", "true"));
 		this.image_sign_server = configOrDefault("IMAGE_SIGN_IP", "localhost:8000");
+		
+		this.querySet = configOrDefault("QUERY_SET_FILE", "~/querySet");
+		this.labelFile = configOrDefault("LABELED_PAIR_FILE", "~/labelFIle");
 	}
 	
 	private String getPath(){
@@ -135,4 +141,14 @@ public class MatchpConfig {
 		System.out.println(config.getEsClusterName());
 		
 	}
+
+	public String getQuerySet() {
+		return querySet;
+	}
+
+	public String getLabelFile() {
+		return labelFile;
+	}
+	
+	
 }

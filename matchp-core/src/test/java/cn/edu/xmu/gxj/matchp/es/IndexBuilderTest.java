@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -67,6 +68,7 @@ public class IndexBuilderTest {
 		builder.setDocfactory(factory);
 	}
 	
+	@Ignore
 	@Test
 	public void testLoft(){
 		String type = "loft";
@@ -85,6 +87,7 @@ public class IndexBuilderTest {
 		}
 	}
 	
+	@Ignore
 	@Test
 	public void testLoftChinese(){
 		String type = "loft";
@@ -104,4 +107,10 @@ public class IndexBuilderTest {
 	}
 	
 
+	@Test
+	public void testRamDomDoc(){
+		ArrayList<String> which = builder.randomDoc("好饿");
+		assertTrue(which.size() == 2);
+	}
+	
 }
