@@ -24,7 +24,9 @@ matchp-api: program's rest api.
 ## TODOLIST
 1. Image de-duplication (Finished)    
 2. Learing to Rank (not yet)  
-3. Adapting to multiple source data (not yet)  
+3. Adapting to multiple source data (not yet 30%)
+4. remove image with qr code(not yet)
+5. remove image with full of text(not yet).  
 
 ## Index Field Declaration    
 text: just text as you know    
