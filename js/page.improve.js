@@ -140,18 +140,18 @@
             return self.genImgHtml(val);
           }).join('');
       return (
-        '<div class="col-sm-8 col-sm-offset-2 text-center">' + 
+        '<div class="col-xs-12 col-sm-8 col-sm-offset-2 text-center">' + 
           '<p class="query-text" >' + text + '</p>' +
         '</div>' + 
-        '<div class="col-sm-2">' +
-          '<button class="btn btn-warning pull-right skip" loadingText="loading...">SKIP</button>' +
+        '<div class="col-xs-12 col-sm-2">' +
+          '<button class="btn btn-warning btn-sm pull-right skip" loadingText="loading...">SKIP</button>' +
         '</div>' +
         imagesHtml
       );
     },
 
     genImgHtml : function (ctx) {
-      var clz = ctx.clz || 'col-sm-6',
+      var clz = ctx.clz || 'col-xs-6',
           answer = ctx.answer || 1,
           src = ctx.src || '',
           title = ctx.title || 'PIC',

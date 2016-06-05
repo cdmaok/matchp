@@ -60,6 +60,13 @@ header h1 {
     padding-bottom: 60%;
     margin: 5% 20%;
 }
+@media screen and (max-width: 768px) {
+    .ip-image-box .img-wrapper {
+        width: 80%;
+        padding-bottom: 80%;
+        margin: 5% 10%;
+    }
+}
 
 .pager {
     width: 100%;
