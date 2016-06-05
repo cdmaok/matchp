@@ -31,6 +31,8 @@
           config = cfg || {},
           params = config.params || {},
           successFn = config.successFn || null;
+      // show loading bar when fetching data
+      self.$imgBox.html(self.genMaskHtml());
       MP.loadData('getImproveDetail', params/*, testData*/)
         .done(function (rsp) {
           self.data = rsp;
@@ -127,7 +129,20 @@
             'Thanks for helping us to improve the accuracy of matching. ' +
             'Please click on the image which you feel better fitting the text.' + 
           '</div>' + 
-          '<div class="row well ip-image-box"></div>' + 
+          '<div class="row well ip-image-box">' +
+          '</div>' + 
+        '</div>'
+      );
+    },
+
+    genMaskHtml : function () {
+      return (
+        '<div class="mask-layer">' + 
+          '<div class="progress">' +
+            '<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' +
+              '<span class="sr-only">L O A D I N G</span>' + 
+            '</div>' +
+          '</div>' +
         '</div>'
       );
     },
