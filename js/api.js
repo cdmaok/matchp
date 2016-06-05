@@ -2,18 +2,18 @@
     var MP = window.MP || {};
 
     $.support.cors = true;
-    
+
     var baseURL = 'http://121.192.180.198:8080/matchp-web/api/';
     var globalAPI = {
         getImgsByText : {
-            name : 'queryImgsByText',
-            server : '',
+            name : 'getImgsByText',
+            server : 'query',
             method : 'POST'
         }, 
         getImproveDetail : {
             name : 'queryImprove',
             server : 'improve',
-            method : 'POST'
+            method : 'GET'
         },
         setImproveDetail : {
             name : 'setImproveDetail',
@@ -25,13 +25,14 @@
     var loadData = function (serverName, params, data) {
         var df = $.Deferred(),
             apiCfg = globalAPI[serverName];
-        if (!apiCfg) throw (serverName + 'not found');
+        if (!apiCfg) throw (serverName + ' not found');
         if (data != null) {
             df.resolve(data);
             return df.promise();
         }
         $.ajax({
             url : baseURL + (apiCfg.server || ''),
+            data : JSON.stringify(params),
             dataType : 'json',
             contentType: 'application/json',
             type : apiCfg.method || 'GET'

@@ -10,6 +10,9 @@ $(function() {
   var gPageNum      = 0; // total page number
   var gTotalData    = []; // the total data from server
 
+  var mainPage = null,
+      improvePage = null;
+
   // jquery DOM objects
   var $imgsPages     = [];
   var $result        = $('#result-container');
@@ -23,6 +26,11 @@ $(function() {
   var $resultCount   = $('#result-count');
 
   $.support.cors = true;
+
+  $('.btn.jump-improve').on('click', function (e) {
+    mainPage = $('body');
+    improvePage = new MP.ImprovePage();
+  });
 
   // bind UI element events
   $('#submit').on('click', function(e) {

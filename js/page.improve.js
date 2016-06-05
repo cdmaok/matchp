@@ -26,12 +26,15 @@
 
   ImprovePage.prototype = {
 
-    fetchData : function () {
+    fetchData : function (cfg) {
       var self = this,
-          params = {};
+          config = cfg || {},
+          params = config.params || {},
+          successFn = config.successFn || null;
       MP.loadData('getImproveDetail', params/*, testData*/)
         .done(function (rsp) {
           self.data = rsp;
+          successFn && successFn(rsp);
           self.render();
         })
         .fail(function (rsp) {
@@ -44,7 +47,7 @@
 
     sendData : function (params) {
       var self = this;
-      MP.loadData('getImproveDetail', params/*, testData*/)
+      MP.loadData('setImproveDetail', params/*, testData*/)
         .done(function () {
           self.data = null;
           self.fetchData();
@@ -74,9 +77,10 @@
       return {
         text : data.query,
         images : $.map(data.entrys, function (val, idx) {
+          var v = JSON.parse(val);
           return {
-            src : val.img || '',
-            title : val.text || '',
+            src : v.img || '',
+            title : v.text || '',
             answer : idx == 0 ? 1 : -1
           };
         })
@@ -99,11 +103,18 @@
           data.answer = $this.data('answer');
           self.sendData(data);
         })
+        .on('click', '.btn.skip', function () {
+          var $btn = $(this);
+          $btn.button('loading');
+          self.fetchData({
+            successFn : function () {$btn.button('reset');}
+          });
+        })
         .on('imgerror', function (evt) {
           var ele = evt.target;
           ele.src = './imgs/default.png';
           ele.onerror = null;
-        })
+        });
     },
 
     genLayoutHtml : function (ctx) {
@@ -129,9 +140,12 @@
             return self.genImgHtml(val);
           }).join('');
       return (
-        '<div class="col-sm-6 col-sm-offset-3 text-center">' + 
+        '<div class="col-sm-8 col-sm-offset-2 text-center">' + 
           '<p class="query-text" >' + text + '</p>' +
         '</div>' + 
+        '<div class="col-sm-2">' +
+          '<button class="btn btn-warning pull-right skip" loadingText="loading...">SKIP</button>' +
+        '</div>' +
         imagesHtml
       );
     },
