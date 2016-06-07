@@ -15,6 +15,7 @@ import cn.edu.xmu.gxj.matchp.es.IndexBuilder;
 import cn.edu.xmu.gxj.matchp.model.EntryPair;
 import cn.edu.xmu.gxj.matchp.model.Reply;
 import cn.edu.xmu.gxj.matchp.mongo.LtrBuilder;
+import cn.edu.xmu.gxj.matchp.util.ErrCode;
 import cn.edu.xmu.gxj.matchp.util.JsonUtility;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
@@ -56,7 +57,8 @@ public class ChooseImpl implements ChooseAPI{
 		try {
 			String id = JsonUtility.getAttribute(json, "id");
 			ltrBuilder.AddAnnotation(id, json);
-			return Response.ok("Thanks for your help").build();
+			Reply reply = new Reply("Thanks for your help", ErrCode.Index_Success);
+			return Response.ok(new Gson().toJson(reply),MediaType.APPLICATION_JSON).build();
 		} catch (MPException e) {
 			e.printStackTrace();
 			Reply reply = new Reply(e);
