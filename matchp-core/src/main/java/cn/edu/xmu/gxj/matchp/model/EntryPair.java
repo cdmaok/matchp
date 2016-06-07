@@ -8,7 +8,7 @@ import cn.edu.xmu.gxj.matchp.util.MPException;
 public class EntryPair {
 
 	private String query;
-	private String _id;
+	private String id;
 	private ArrayList<String> entrys;
 	private Integer answer;
 	
@@ -16,16 +16,17 @@ public class EntryPair {
 		super();
 		this.query = query;
 		this.entrys = entrys;
-		this._id = id;
+		this.id = id;
 	}
 	
 	public EntryPair simpleFormat() throws MPException{
 		ArrayList<String> texts = new ArrayList<>();
 		for (int i = 0; i < entrys.size(); i++) {
 			String text = JsonUtility.getAttribute(entrys.get(i), "text");
-			texts.add(text);
+			String img = JsonUtility.getAttribute(entrys.get(i), "img");
+			texts.add(JsonUtility.newJsonString("text", text, "img", img));
 		}
-		return new EntryPair(query, _id, texts);
+		return new EntryPair(query, id, texts);
 	}
 	
 	
@@ -51,11 +52,11 @@ public class EntryPair {
 	}
 
 	public String getId() {
-		return _id;
+		return id;
 	}
 
 	public void setId(String id) {
-		this._id = id;
+		this.id = id;
 	}
 
 	public void setAnswer(Integer answer) {

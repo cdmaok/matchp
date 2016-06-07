@@ -64,6 +64,9 @@ public class LtrBuilder {
 	
 	public void insetRecord(String jsonString){
 		Document document = Document.parse(jsonString);
+		String id = document.getString("id");
+		document.remove("id");
+		document.put("_id", id);
 		MongoCollection<Document> annoSet = ltrDb.getCollection(annoCollection);
 		annoSet.insertOne(document);
 	}

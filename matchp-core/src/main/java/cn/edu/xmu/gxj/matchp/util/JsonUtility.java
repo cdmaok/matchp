@@ -69,6 +69,22 @@ public class JsonUtility {
 	}
 	
 	/*
+	 * TODO: same with upper function
+	 * make (key,value) into a json string: {key:value}
+	 */
+	public static String newJsonString(String key1,String value1,String key2,String value2) throws MPException{
+		HashMap<String, String> hashMap = new HashMap<>();
+		hashMap.put(key1, value1);
+		hashMap.put(key2, value2);
+		try {
+			return mapper.writeValueAsString(hashMap);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new MPException(ErrCode.Invalid_Request, key1 + " " + value1 + " " + e.getMessage());
+		}
+	}
+	
+	/*
 	 * convert a json string into a hashmap
 	 */
 	public static Map<String, Object> json2Map(String json) throws MPException{
