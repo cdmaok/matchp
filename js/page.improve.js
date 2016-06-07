@@ -102,7 +102,7 @@
         .on('click', '.img-wrapper a', function () {
           var $this = $(this);
           self.sendData({
-            itemID : self.data.itemID,
+            id : self.data.id,
             answer : $this.data('answer')
           });
         })
