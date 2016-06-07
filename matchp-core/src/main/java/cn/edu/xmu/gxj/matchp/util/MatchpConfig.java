@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.URLDecoder;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -34,8 +32,8 @@ public class MatchpConfig {
 	private final boolean image_sign_enable;
 	private final String image_sign_server;
 	
-	private final String querySet;
-	private final String labelFile;
+	private final String ltr_mongo_url;
+	
 	
 	public MatchpConfig() {
 		try {
@@ -71,8 +69,8 @@ public class MatchpConfig {
 		this.image_sign_enable = Boolean.parseBoolean(configOrDefault("IMAGE_SIGN_ENABLE", "true"));
 		this.image_sign_server = configOrDefault("IMAGE_SIGN_IP", "localhost:8000");
 		
-		this.querySet = configOrDefault("QUERY_SET_FILE", "~/querySet");
-		this.labelFile = configOrDefault("LABELED_PAIR_FILE", "~/labelFIle");
+		this.ltr_mongo_url = configOrDefault("LTR_MONGO_URL", "mongodb://127.0.0.1:27017/matchp");
+		
 	}
 	
 	private String getPath(){
@@ -136,19 +134,15 @@ public class MatchpConfig {
 		return image_sign_server;
 	}
 
+	public String getLtr_mongo_url() {
+		return ltr_mongo_url;
+	}
+
 	public static void main(String[] args) throws FileNotFoundException, IOException{
 		MatchpConfig config = new MatchpConfig();
 		System.out.println(config.getEsClusterName());
 		
 	}
 
-	public String getQuerySet() {
-		return querySet;
-	}
-
-	public String getLabelFile() {
-		return labelFile;
-	}
-	
 	
 }

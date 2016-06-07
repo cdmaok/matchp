@@ -49,6 +49,9 @@ public class EntryBuilder {
 		case "weibo":
 			typeScore = 0.5;
 			break;
+		case "tumblr":
+			typeScore = 2;
+			break;
 		default:
 			typeScore = 0;
 			break;
