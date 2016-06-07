@@ -7,10 +7,12 @@ import urllib2,os,urllib,sys,time
 url = 'http://localhost:8080'
 api = '/matchp-web/api/index'
 
-def addIndex(filepath):
+def addIndex(filepath,indexType,start=0):
 	weibos = [ line.strip() for line in open(filepath).readlines()]
-	for index,weibo in enumerate(weibos):
-		fetch_weibo(url+api,weibo)
+	size = len(weibos[start:])
+	for index,weibo in enumerate(weibos[start:]):
+		fetch_weibo(url+api + '?type=' + indexType,weibo)
+		print 'finish %d / %d' %(index,size)
 		if index % 1000 == 0:
 			time.sleep(60)
 
@@ -21,7 +23,6 @@ def fetch_weibo(url,text):
 	try:
 		res = urllib2.urlopen(req)
 		data = res.read()
-		print data
 	except urllib2.HTTPError as e:
 		print text
 		print e.code
@@ -29,14 +30,17 @@ def fetch_weibo(url,text):
 
 
 if __name__ == '__main__':
-	if len(sys.argv) != 2:
-		print 'need a file.'
+	if len(sys.argv) != 3:
+		print 'need a file. and type'
 		sys.exit()
 	else:
 		filepath = sys.argv[1]
+		indexType = sys.argv[2]
+		start = 0
+		if len(sys.argv) == 4: start = int(sys.argv[3])
 		if not os.path.exists(filepath):
 			print filepath, 'no exists.'
 			exit
-		addIndex(filepath)
+		addIndex(filepath,indexType,start)
 		print 'finish indexing.'
 
