@@ -17,8 +17,8 @@ public interface ChooseAPI {
 	Response Choose();
 	
 	@POST
-	@Path("{id}")
+//	@Path("{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
-	Response Prefer(@PathParam("id") String id,String json);
+	Response Prefer(String json);
 	
 }

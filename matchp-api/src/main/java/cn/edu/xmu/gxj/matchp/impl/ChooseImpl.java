@@ -1,10 +1,7 @@
 package cn.edu.xmu.gxj.matchp.impl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -15,10 +12,10 @@ import com.google.gson.Gson;
 
 import cn.edu.xmu.gxj.matchp.api.ChooseAPI;
 import cn.edu.xmu.gxj.matchp.es.IndexBuilder;
-import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.model.EntryPair;
 import cn.edu.xmu.gxj.matchp.model.Reply;
 import cn.edu.xmu.gxj.matchp.mongo.LtrBuilder;
+import cn.edu.xmu.gxj.matchp.util.JsonUtility;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
@@ -55,8 +52,9 @@ public class ChooseImpl implements ChooseAPI{
 	}
 
 	@Override
-	public Response Prefer(String id,String json) {
+	public Response Prefer(String json) {
 		try {
+			String id = JsonUtility.getAttribute(json, "id");
 			ltrBuilder.AddAnnotation(id, json);
 			return Response.ok("Thanks for your help").build();
 		} catch (MPException e) {
