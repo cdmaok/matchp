@@ -100,10 +100,11 @@
       var self = this;
       self.$imgBox
         .on('click', '.img-wrapper a', function () {
-          var $this = $(this),
-              data = self.data;
-          data.answer = $this.data('answer');
-          self.sendData(data);
+          var $this = $(this);
+          self.sendData({
+            itemID : self.data.itemID,
+            answer : $this.data('answer')
+          });
         })
         .on('click', '.btn.skip', function () {
           var $btn = $(this);
