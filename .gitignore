@@ -15,4 +15,4 @@ hs_err_pid*
 target/
 .classpath
 data/
-#config.properties
+config.properties
