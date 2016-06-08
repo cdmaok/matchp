@@ -19,6 +19,15 @@ public class Fields {
 	public static final String imgSize = "imgSize";
 	
 	
+	// some field for social score
+	public static final String weibo_goods = "goods";
+	public static final String weibo_repost = "repost";
+	public static final String weibo_comments = "comments";
+	public static final String loft_comments = "comment";
+	public static final String loft_hot = "hot";
+	public static final String tumblr_hot = "hot";
+	
+	
 	public static enum Type{
 		WEIBO("weibo"),
 		LOFT("loft");

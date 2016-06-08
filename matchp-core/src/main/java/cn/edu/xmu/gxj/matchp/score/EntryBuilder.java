@@ -22,6 +22,9 @@ public class EntryBuilder {
 	private final String SentiScore = "SentiScore";
 	private final String IrScore = "IrScore";
 	private final String FinScore = "FinScore";
+	private final String SizeScore = "SizeScore";
+	
+	private double[] weights = new double[]{0.99569356, -0.16700651, 0.78396082 , -0.13378303,0.0015323567};
 	
 
 	public  Entry buildEntry(double querySenti,SearchHit hit){
@@ -42,29 +45,21 @@ public class EntryBuilder {
 		double irScore = hit.getScore();
 		double sentiScore = 0;
 		double typeScore = 0;
-		switch (hit.getType()) {
-		case "loft":
-			typeScore = 1;
-			break;
-		case "weibo":
-			typeScore = 0.5;
-			break;
-		case "tumblr":
-			typeScore = 2;
-			break;
-		default:
-			typeScore = 0;
-			break;
-		}
-		
+		double socialScore = 0;
+
+		double[] typeAndsocial = calSocialScore(hit);
+		typeScore =  typeAndsocial[0];
+		socialScore = typeAndsocial[1];
 		
 		if (config.isSentiment_enable()) {
 			double resultSenti = (double) map.get(Fields.polarity);
 			sentiScore = calSentiment(querySenti, resultSenti);
 		}
-		
 
-		double score = irScore + sentiScore + typeScore;
+		double sizeScore = (double) map.get(Fields.imgSize);
+
+		//TODO: change the calculation
+		double score = weights[0]* sizeScore + weights[1]* sentiScore + weights[2] * irScore + weights[3] * typeScore + weights[4] *socialScore;
 		
 		
 		//TODO: may be change to constant field
@@ -78,6 +73,30 @@ public class EntryBuilder {
 	
 	public double calSentiment(double query,double result){
 		return 1 - Math.abs(query - result);
+	}
+	
+	public double[] calSocialScore(SearchHit hit){
+		double typeScore,socialScore;
+		Map<String, Object> map = hit.getSource();
+		switch (hit.getType()) {
+		case "loft":
+			typeScore = 1;
+			socialScore = (Integer)map.get(Fields.loft_comments) + (Integer)map.get(Fields.loft_hot);
+			break;
+		case "weibo":
+			typeScore = 0.5;
+			socialScore = (Integer)map.get(Fields.weibo_comments) + (Integer)map.get(Fields.weibo_goods) + (Integer)map.get(Fields.weibo_repost);
+			break;
+		case "tumblr":
+			typeScore = 2;
+			socialScore = (Integer) map.get(Fields.tumblr_hot);
+			break;
+		default:
+			typeScore = 0;
+			socialScore = 0;
+			break;
+		}
+		return new double[]{typeScore,socialScore};
 	}
 	
 }
