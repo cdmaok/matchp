@@ -135,7 +135,7 @@
 		<dependency>
 	    	<groupId>com.github.cdmaok</groupId>
 	    	<artifactId>RankLib</artifactId>
-	    	<version>v2.6-source</version>
+	    	<version>2.6source</version>
 		</dependency>
 
 	</dependencies>
