@@ -41,9 +41,8 @@ public class LtrBuilderTest {
 	}
 	
 	@Test
-	public void testInsertQuery(){
-		int answer = 1;
-		
+	public void testloadAnno(){
+		ltrbuilder.dumpRecord();
 	}
 
 }

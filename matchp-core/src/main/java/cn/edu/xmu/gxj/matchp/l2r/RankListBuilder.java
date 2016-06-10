@@ -10,12 +10,11 @@ import ciir.umass.edu.learning.RankList;
 public class RankListBuilder {
 
 	public static RankList  build(String[] strings){
-		List<DataPoint> rl = new ArrayList<DataPoint>();
+		List<DataPoint> dps = new ArrayList<DataPoint>();
 		for(String dpstr: strings){
 			DataPoint dp = new DenseDataPoint(dpstr);
-			rl.add(dp);
+			dps.add(dp);
 		}
-		
-		return new RankList(rl);
+		return new RankList(dps);
 	}
 }

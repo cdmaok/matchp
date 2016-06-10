@@ -2,6 +2,10 @@ package cn.edu.xmu.gxj.matchp.l2r;
 
 import static org.junit.Assert.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Test;
 
 import ciir.umass.edu.learning.DataPoint;
@@ -27,4 +31,5 @@ public class RankListBuilderTest {
 		assertEquals(dp.getFeatureCount(), 5);
 	}
 
+	
 }

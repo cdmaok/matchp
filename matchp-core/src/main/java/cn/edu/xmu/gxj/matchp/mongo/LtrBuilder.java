@@ -15,6 +15,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -91,6 +92,15 @@ public class LtrBuilder {
 			throw new MPException(ErrCode.Invalid_Request, "no answer field.");
 		}
 		return 1;
+	}
+	
+	public void dumpRecord(){
+		MongoCollection<Document> annoSet = ltrDb.getCollection(annoCollection);
+		FindIterable<Document> documents =  annoSet.find(new Document("answer", new Document("$exists", true)));
+		
+		for (Document document : documents) {
+			System.out.println(document.toJson());
+		}
 	}
 	
 }
