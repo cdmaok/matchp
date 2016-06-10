@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import cn.edu.xmu.gxj.matchp.l2r.RankListBuilder;
 import cn.edu.xmu.gxj.matchp.model.DocFactoryTest;
 import cn.edu.xmu.gxj.matchp.model.LoftTest;
 import cn.edu.xmu.gxj.matchp.model.WeiboTest;
@@ -14,7 +15,8 @@ import cn.edu.xmu.gxj.matchp.score.EntryBuilderTest;
 	LoftTest.class,
 	EntryBuilderTest.class,
 	DocFactoryTest.class,
-	EntryBuilderTest.class})
+	EntryBuilderTest.class,
+	RankListBuilder.class})
 
 public class MvnTestControl {
 

@@ -1,6 +1,5 @@
 package cn.edu.xmu.gxj.matchp.score;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
@@ -55,7 +54,6 @@ public class EntryBuilderTest {
 	
 	@Test
 	public void test(){
-
 		Entry entry = builder.buildEntry(0.5,hit);
 //		assertEquals( 1 - (0.5-0.34) + 0.45f + 1 + 40 + 1, entry.getScore(), 0.01);
 	}

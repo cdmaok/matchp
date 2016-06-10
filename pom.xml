@@ -131,7 +131,12 @@
 			<artifactId>mongo-java-driver</artifactId>
 			<version>3.2.2</version>
 		</dependency>
-
+		
+		<dependency>
+	    	<groupId>com.github.cdmaok</groupId>
+	    	<artifactId>RankLib</artifactId>
+	    	<version>v2.6-source</version>
+		</dependency>
 
 	</dependencies>
 	<build>
@@ -151,4 +156,13 @@
 		<module>matchp-api</module>
 		<module>matchp-web</module>
 	</modules>
+	
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+	
+	
 </project>
