@@ -19,8 +19,7 @@ import cn.edu.xmu.gxj.matchp.score.EntryBuilderTest;
 	EntryBuilderTest.class,
 	DocFactoryTest.class,
 	EntryBuilderTest.class,
-	RankListBuilderTest.class,
-	QueryRankerTest.class})
+	RankListBuilderTest.class})
 
 public class MvnTestControl {
 
