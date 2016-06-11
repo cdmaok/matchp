@@ -267,16 +267,22 @@ public class IndexBuilder {
 		SearchHit[] results = response.getHits().getHits();
 		ArrayList<String> resultList = new ArrayList<String>();
 		HashSet<String> signs = new HashSet<>();
+		
+		ArrayList<String> vectors = new ArrayList<>();
+		
 		Random random = new Random();
 		while (resultList.size() != 2) {
 			int index = random.nextInt(results.length);
 			SearchHit hit =  results[index];
 			Map<String, Object> result = hit.getSource();
 			String pick = entryBuilder.buildJson(querySenti, hit);
-			String sign = (String) result.get(Fields.imgSign);
+			String sign = MapUtils.getString(result, Fields.imgSign, "");
+			
 			if (!signs.contains(sign)) {
 				resultList.add(pick);
 				signs.add(sign);
+				String vector = MapUtils.getString(result, "feature","");
+				vectors.add(vector);
 			}else{
 				logger.debug("find the duplicated one. sign is {}, url is {}", sign,(String) result.get(Fields.img));
 			}
