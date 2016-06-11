@@ -11,6 +11,7 @@ import java.util.Random;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.MapUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
+import cn.edu.xmu.gxj.matchp.l2r.QueryRanker;
 import cn.edu.xmu.gxj.matchp.model.Doc;
 import cn.edu.xmu.gxj.matchp.model.DocFactory;
 import cn.edu.xmu.gxj.matchp.model.Entry;
@@ -58,6 +60,8 @@ public class IndexBuilder {
 	@Autowired
 	private EntryBuilder entryBuilder;
 
+	@Autowired
+	private QueryRanker queryRanker;
 
 	private Settings settings;
 	
@@ -199,20 +203,27 @@ public class IndexBuilder {
 		SearchResponse response = client.prepareSearch(indexName).setSearchType(SearchType.QUERY_THEN_FETCH)
 		.setQuery(QueryBuilders.matchQuery("text", query).analyzer("ik_syno")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
 
-		long queryEnd = System.currentTimeMillis();
+
 		double querySenti = sent.getSentiment(query);
 		long mergeStart = System.currentTimeMillis();
 		SearchHit[] results = response.getHits().getHits();
 		ArrayList<Entry> resultList = new ArrayList<Entry>();
 		HashSet<String> signs = new HashSet<>();
+		
+		ArrayList<String> vectors = new ArrayList<>();
+		
 		for (SearchHit hit : results) {
 			Map<String, Object> result = hit.getSource();
 			Entry entry = entryBuilder.buildEntry(querySenti, hit);
 			//TODO: this de-duplication is ugly.
-			String sign = (String) result.get(Fields.imgSign);
+			
+			String sign = MapUtils.getString(result, Fields.imgSign, "");
+			
 			if (!signs.contains(sign)) {
 				resultList.add(entry);
 				signs.add(sign);
+				String vector = MapUtils.getString(result, "feature","");
+				vectors.add(vector);
 			}else{
 				logger.debug("find the duplicated one. sign is {}, url is {}", sign, entry.getUrl());
 			}
@@ -220,11 +231,26 @@ public class IndexBuilder {
 
 		}
 		long mergeEnd = System.currentTimeMillis();
+		
+		long l2rStart = System.currentTimeMillis();
+		
+		double[] pros = queryRanker.getPro(vectors);
+		
+		long l2rmid = System.currentTimeMillis();
+		
+		for (int i = 0; i < pros.length; i++) {
+			resultList.get(i).setScore((float) pros[i]);
+		}
+		
+		long l2rEnd = System.currentTimeMillis();
+		
+		
 		long sortStart = System.currentTimeMillis();
 		Collections.sort(resultList, new ScoreComparator());
 		long sortEnd = System.currentTimeMillis();
-		logger.info("query:{}, using time: query = {}ms, merge = {}ms, sort = {}ms, total = {}ms, result:{}",
-				query, queryEnd - queryStart, mergeEnd - mergeStart, sortEnd - sortStart, queryEnd - queryStart, resultList.size());
+		long queryEnd = System.currentTimeMillis();
+		logger.info("query:{}, using time: query = {}ms, merge = {}ms,rank = {} / {}ms, sort = {}ms, total = {}ms, result:{}",
+				query, queryEnd - queryStart, mergeEnd - mergeStart, l2rmid - l2rStart ,l2rEnd - l2rStart ,sortEnd - sortStart, queryEnd - queryStart, resultList.size());
 		client.close();
 		return new Gson().toJson(resultList);
 	}

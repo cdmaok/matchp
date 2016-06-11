@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
+import cn.edu.xmu.gxj.matchp.l2r.QueryRanker;
 import cn.edu.xmu.gxj.matchp.model.DocFactory;
 import cn.edu.xmu.gxj.matchp.model.DocFactoryTest;
 import cn.edu.xmu.gxj.matchp.model.Entry;
@@ -48,6 +49,9 @@ public class IndexBuilderTest {
 	@InjectMocks
 	EntryBuilder entryBuilder;
 	
+	@Mock
+	QueryRanker queryRanker;
+	
 	@InjectMocks
 	IndexBuilder builder;
 	
@@ -57,12 +61,13 @@ public class IndexBuilderTest {
 	@Before
 	public void setUp(){
 		
-		when(config.getEsClusterName()).thenReturn("elasticsearch");
+		when(config.getEsClusterName()).thenReturn("cdmaok");
 		when(config.getEsHostName()).thenReturn("121.192.180.198");
 		when(config.getEsTimeout()).thenReturn(5000L);
 		when(config.isSentiment_enable()).thenReturn(false);
 		when(sent.getSentiment(any(String.class))).thenReturn(0.5f);
 		when(signServer.getSignature(any(String.class))).thenReturn("abcdefg");
+		when(queryRanker.getPro(any(ArrayList.class))).thenReturn(new double[]{1.1,1.2,1.3});
 		builder.init();
 		builder.setEntryBuilder(entryBuilder);
 		builder.setDocfactory(factory);
@@ -107,6 +112,7 @@ public class IndexBuilderTest {
 	}
 	
 
+	@Ignore
 	@Test
 	public void testRamDomDoc(){
 		ArrayList<String> which = builder.randomDoc("好饿");

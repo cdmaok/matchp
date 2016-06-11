@@ -2,6 +2,7 @@ package cn.edu.xmu.gxj.matchp.score;
 
 import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ public class EntryBuilder {
 	private final String IrScore = "IrScore";
 	private final String FinScore = "FinScore";
 	private final String SizeScore = "SizeScore";
+	private final String FeatureVector = "feature";
 	
 	private double[] weights = new double[]{0.99569356, -0.16700651, 0.78396082 , -0.13378303,0.0015323567};
 	
@@ -46,6 +48,8 @@ public class EntryBuilder {
 		double sentiScore = 0;
 		double typeScore = 0;
 		double socialScore = 0;
+		
+		String vector = "";
 
 		double[] typeAndsocial = calSocialScore(hit);
 		typeScore =  typeAndsocial[0];
@@ -56,17 +60,19 @@ public class EntryBuilder {
 			sentiScore = calSentiment(querySenti, resultSenti);
 		}
 
-		double sizeScore = (double) map.get(Fields.imgSize);
+		double sizeScore = MapUtils.getDoubleValue(map, Fields.imgSize, 0);
 
 		//TODO: change the calculation
 		double score = weights[0]* sizeScore + weights[1]* sentiScore + weights[2] * irScore + weights[3] * typeScore + weights[4] *socialScore;
 		
+		vector = "1 qid:1 1:" + sizeScore + " 2:" + sentiScore + " 3:" + irScore + " 4:" + typeScore + " 5:" + socialScore;
 		
 		//TODO: may be change to constant field
 		map.put(TypeScore, typeScore);
 		map.put(IrScore, irScore);
 		map.put(SentiScore, sentiScore);
 		map.put(FinScore, score);
+		map.put(FeatureVector, vector);
 		
 		return map;
 	}
