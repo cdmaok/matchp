@@ -19,6 +19,9 @@ public class Fields {
 	public static final String imgSize = "imgSize";
 	
 	
+	// for entry
+	public static final String score = "Finscore";
+	
 	// some field for social score
 	public static final String weibo_goods = "goods";
 	public static final String weibo_repost = "repost";

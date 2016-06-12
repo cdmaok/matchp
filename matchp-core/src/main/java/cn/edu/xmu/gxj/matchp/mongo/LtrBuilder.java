@@ -83,7 +83,7 @@ public class LtrBuilder {
 	public  int AddAnnotation(String id,String json) throws MPException{
 		//TODO: change this answer field and id field.
 		try {
-			Integer answer = Integer.parseInt(JsonUtility.getAttribute(json, ANSWER));
+			Integer answer = Integer.parseInt(JsonUtility.getAttributeasStr(json, ANSWER));
 			if (answer != 1 && answer != -1) {
 				throw new NumberFormatException();
 			}

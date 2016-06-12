@@ -30,7 +30,7 @@ public class QueryImpl implements QueryAPI{
 		logger.info("query is {}",query);
 		String ret;
 		try {
-			String queryText = JsonUtility.getAttribute(query, Fields.queryField);
+			String queryText = JsonUtility.getAttributeasStr(query, Fields.queryField);
 			ret = indexBuilder.searchDoc(queryText);
 
 			// cors

@@ -29,7 +29,7 @@ import cn.edu.xmu.gxj.matchp.model.DocFactoryTest;
 import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.plugins.ImageSign;
 import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
-import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
+import cn.edu.xmu.gxj.matchp.score.EntryUtility;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;  
 
@@ -47,7 +47,7 @@ public class IndexBuilderTest {
 	ImageSign signServer;
 	
 	@InjectMocks
-	EntryBuilder entryBuilder;
+	EntryUtility entryBuilder;
 	
 	@Mock
 	QueryRanker queryRanker;
@@ -115,8 +115,15 @@ public class IndexBuilderTest {
 	@Ignore
 	@Test
 	public void testRamDomDoc(){
-		ArrayList<String> which = builder.randomDoc("好饿");
-		assertTrue(which.size() == 2);
+		ArrayList<String> which;
+		try {
+			which = builder.randomDoc("好饿");
+			assertTrue(which.size() == 2);
+		} catch (MPException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+
 	}
 	
 }

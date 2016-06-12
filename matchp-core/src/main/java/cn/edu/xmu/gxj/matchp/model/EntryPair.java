@@ -2,7 +2,9 @@ package cn.edu.xmu.gxj.matchp.model;
 
 import java.util.ArrayList;
 
-import cn.edu.xmu.gxj.matchp.util.JsonUtility;
+import com.google.gson.Gson;
+
+import cn.edu.xmu.gxj.matchp.score.EntryUtility;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 
 public class EntryPair {
@@ -20,15 +22,12 @@ public class EntryPair {
 	}
 	
 	public EntryPair simpleFormat() throws MPException{
-		ArrayList<String> texts = new ArrayList<>();
-		for (int i = 0; i < entrys.size(); i++) {
-			String text = JsonUtility.getAttribute(entrys.get(i), "text");
-			String img = JsonUtility.getAttribute(entrys.get(i), "img");
-			texts.add(JsonUtility.newJsonString("text", text, "img", img));
-		}
-		return new EntryPair(query, id, texts);
+		ArrayList<Entry> entryArray = EntryUtility.buildEntryArray(entrys);
+		ArrayList<String> newentrys = new ArrayList<>();
+		newentrys.add(new Gson().toJson(entryArray.get(0)));
+		newentrys.add(new Gson().toJson(entryArray.get(1)));
+		return new EntryPair(query, id, newentrys);
 	}
-	
 	
 	public String getQuery() {
 		return query;

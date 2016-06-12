@@ -8,14 +8,17 @@ import cn.edu.xmu.gxj.matchp.l2r.RankListBuilderTest;
 import cn.edu.xmu.gxj.matchp.model.DocFactoryTest;
 import cn.edu.xmu.gxj.matchp.model.LoftTest;
 import cn.edu.xmu.gxj.matchp.model.WeiboTest;
-import cn.edu.xmu.gxj.matchp.score.EntryBuilderTest;
+import cn.edu.xmu.gxj.matchp.score.EntryUtilityTest;
+import cn.edu.xmu.gxj.matchp.util.JsonUtility;
+import cn.edu.xmu.gxj.matchp.util.JsonUtilityTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({WeiboTest.class,
 	LoftTest.class,
-	EntryBuilderTest.class,
+	EntryUtilityTest.class,
+	JsonUtilityTest.class,
 	DocFactoryTest.class,
-	EntryBuilderTest.class,
+	EntryUtilityTest.class,
 	RankListBuilderTest.class})
 
 public class MvnTestControl {

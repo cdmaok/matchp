@@ -38,9 +38,10 @@ import cn.edu.xmu.gxj.matchp.model.Doc;
 import cn.edu.xmu.gxj.matchp.model.DocFactory;
 import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
-import cn.edu.xmu.gxj.matchp.score.EntryBuilder;
+import cn.edu.xmu.gxj.matchp.score.EntryUtility;
 import cn.edu.xmu.gxj.matchp.score.ScoreComparator;
 import cn.edu.xmu.gxj.matchp.util.Fields;
+import cn.edu.xmu.gxj.matchp.util.JsonUtility;
 import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
@@ -58,7 +59,7 @@ public class IndexBuilder {
 
 	
 	@Autowired
-	private EntryBuilder entryBuilder;
+	private EntryUtility entryBuilder;
 
 	@Autowired
 	private QueryRanker queryRanker;
@@ -195,37 +196,45 @@ public class IndexBuilder {
 		client.close();
 	}
 
-	public String searchDoc(String query) {
+	public String searchDoc(String query) throws MPException {
+		ArrayList<String> resultList = searchDoc(query, 60);
+		ArrayList<Entry> entryList = EntryUtility.buildEntryArray(resultList);
+		return new Gson().toJson(entryList);
+	}
+	
+	
+	public ArrayList<String> searchDoc(String query,int size) throws MPException {
 		Client client = getClient();
 		
 		long queryStart = System.currentTimeMillis();
 		// we change search type to 'query then fetch' from 'query and fetch',otherwise it will ignore the limit size.
 		SearchResponse response = client.prepareSearch(indexName).setSearchType(SearchType.QUERY_THEN_FETCH)
-		.setQuery(QueryBuilders.matchQuery("text", query).analyzer("ik_syno")).setFrom(0).setSize(60).setExplain(true).execute().actionGet();
+		.setQuery(QueryBuilders.matchQuery("text", query).analyzer("ik_syno")).setFrom(0).setSize(size).setExplain(true).execute().actionGet();
 
 
 		double querySenti = sent.getSentiment(query);
 		long mergeStart = System.currentTimeMillis();
 		SearchHit[] results = response.getHits().getHits();
-		ArrayList<Entry> resultList = new ArrayList<Entry>();
+		ArrayList<String> resultList = new ArrayList<String>();
 		HashSet<String> signs = new HashSet<>();
 		
 		ArrayList<String> vectors = new ArrayList<>();
 		
 		for (SearchHit hit : results) {
 			Map<String, Object> result = hit.getSource();
-			Entry entry = entryBuilder.buildEntry(querySenti, hit);
+//			Entry entry = entryBuilder.buildEntry(querySenti, hit);
+			String entryString = entryBuilder.buildJson(querySenti, hit);
 			//TODO: this de-duplication is ugly.
 			
 			String sign = MapUtils.getString(result, Fields.imgSign, "");
 			
 			if (!signs.contains(sign)) {
-				resultList.add(entry);
+				resultList.add(entryString);
 				signs.add(sign);
 				String vector = MapUtils.getString(result, "feature","");
 				vectors.add(vector);
 			}else{
-				logger.debug("find the duplicated one. sign is {}, url is {}", sign, entry.getUrl());
+				logger.debug("find the duplicated one. sign is {}, url is {}", sign, JsonUtility.getAttributeasStr(entryString, Fields.img));
 			}
 			logger.debug(result + "," + hit.getScore());
 
@@ -239,11 +248,11 @@ public class IndexBuilder {
 		long l2rmid = System.currentTimeMillis();
 		
 		for (int i = 0; i < pros.length; i++) {
-			resultList.get(i).setScore((float) pros[i]);
+//			resultList.get(i).setScore((float) pros[i]);
+			JsonUtility.setAttribute(resultList.get(i), Fields.score, pros[i]);
 		}
 		
 		long l2rEnd = System.currentTimeMillis();
-		
 		
 		long sortStart = System.currentTimeMillis();
 		Collections.sort(resultList, new ScoreComparator());
@@ -252,53 +261,37 @@ public class IndexBuilder {
 		logger.info("query:{}, using time: query = {}ms, merge = {}ms,rank = {} / {}ms, sort = {}ms, total = {}ms, result:{}",
 				query, queryEnd - queryStart, mergeEnd - mergeStart, l2rmid - l2rStart ,l2rEnd - l2rStart ,sortEnd - sortStart, queryEnd - queryStart, resultList.size());
 		client.close();
-		return new Gson().toJson(resultList);
+		return resultList;
 	}
 	
 	
-	public ArrayList<String> randomDoc(String query) {
-		Client client = getClient();
-		
-		// we change search type to 'query then fetch' from 'query and fetch',otherwise it will ignore the limit size.
-		SearchResponse response = client.prepareSearch(indexName).setSearchType(SearchType.QUERY_THEN_FETCH)
-		.setQuery(QueryBuilders.matchQuery("text", query).analyzer("ik_syno")).setFrom(0).setSize(10).setExplain(true).execute().actionGet();
-
-		double querySenti = sent.getSentiment(query);
-		SearchHit[] results = response.getHits().getHits();
-		ArrayList<String> resultList = new ArrayList<String>();
-		HashSet<String> signs = new HashSet<>();
-		
-		ArrayList<String> vectors = new ArrayList<>();
-		
+	public ArrayList<String> randomDoc(String query) throws MPException {
+		ArrayList<String> resultList = searchDoc(query, 10);
+		ArrayList<String> entrys = new ArrayList<>();
+		int size = resultList.size();
 		Random random = new Random();
-		while (resultList.size() != 2) {
-			int index = random.nextInt(results.length);
-			SearchHit hit =  results[index];
-			Map<String, Object> result = hit.getSource();
-			String pick = entryBuilder.buildJson(querySenti, hit);
-			String sign = MapUtils.getString(result, Fields.imgSign, "");
-			
-			if (!signs.contains(sign)) {
-				resultList.add(pick);
-				signs.add(sign);
-				String vector = MapUtils.getString(result, "feature","");
-				vectors.add(vector);
-			}else{
-				logger.debug("find the duplicated one. sign is {}, url is {}", sign,(String) result.get(Fields.img));
+		if(size < 2){
+			return new ArrayList<>();
+		}else{
+			int firstId = random.nextInt(size);
+			int secondId = firstId;
+			while(secondId == firstId){
+				secondId = random.nextInt(size);
 			}
+			entrys.add(resultList.get(firstId));
+			entrys.add(resultList.get(secondId));
+			return entrys;
 		}
-		client.close();
-		return resultList;
 	}
 
 	/*
 	 * useless, only for test case.
 	 */
-	public EntryBuilder getEntryBuilder() {
+	public EntryUtility getEntryBuilder() {
 		return entryBuilder;
 	}
 
-	public void setEntryBuilder(EntryBuilder entryBuilder) {
+	public void setEntryBuilder(EntryUtility entryBuilder) {
 		this.entryBuilder = entryBuilder;
 	}
 

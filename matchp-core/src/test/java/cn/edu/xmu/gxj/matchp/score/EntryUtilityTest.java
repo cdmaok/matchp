@@ -19,7 +19,7 @@ import cn.edu.xmu.gxj.matchp.util.Fields;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EntryBuilderTest {
+public class EntryUtilityTest {
 	
 	@Mock
 	private MatchpConfig config;
@@ -31,7 +31,7 @@ public class EntryBuilderTest {
 	private SearchHit hit;
 	
 	@InjectMocks
-	private EntryBuilder builder;
+	private EntryUtility builder;
 	
 	public static String test = "abc";
 

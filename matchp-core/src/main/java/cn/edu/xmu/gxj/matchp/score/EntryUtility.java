@@ -1,5 +1,6 @@
 package cn.edu.xmu.gxj.matchp.score;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
@@ -11,10 +12,12 @@ import com.google.gson.Gson;
 
 import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.util.Fields;
+import cn.edu.xmu.gxj.matchp.util.JsonUtility;
+import cn.edu.xmu.gxj.matchp.util.MPException;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
 @Component
-public class EntryBuilder {
+public class EntryUtility {
 	
 	@Autowired
 	private MatchpConfig config;
@@ -22,7 +25,7 @@ public class EntryBuilder {
 	private final String TypeScore = "TypeScore";
 	private final String SentiScore = "SentiScore";
 	private final String IrScore = "IrScore";
-	private final String FinScore = "FinScore";
+	private final String FinScore = Fields.score;
 	private final String SizeScore = "SizeScore";
 	private final String FeatureVector = "feature";
 	
@@ -36,6 +39,21 @@ public class EntryBuilder {
 		return new Entry(text, url, (double) map.get(FinScore));
 	}
 	
+	public static ArrayList<Entry> buildEntryArray(ArrayList<String> stringArray) throws MPException{
+		ArrayList<Entry> entrys = new ArrayList<>();
+		for(int i = 0; i < stringArray.size(); i ++){
+			String string = stringArray.get(i);
+			
+			String text = JsonUtility.getAttributeasStr(string, Fields.text);
+			String url = JsonUtility.getAttributeasStr(string, Fields.img);
+			double score = JsonUtility.getAttributeasDouble(string, Fields.score);
+			
+			//TODO : may improve speed here.
+			Entry entry = new Entry(text, url, score);
+			entrys.add(entry);
+		}
+		return entrys;
+	}
 	
 	public  String buildJson(double querySenti,SearchHit hit){
 		Map<String, Object> map = calScore(querySenti, hit);

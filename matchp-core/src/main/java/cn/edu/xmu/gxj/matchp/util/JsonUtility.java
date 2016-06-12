@@ -1,12 +1,17 @@
 package cn.edu.xmu.gxj.matchp.util;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.type.MapType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 /*
  * to help with json operation
@@ -32,7 +37,7 @@ public class JsonUtility {
 	/*
 	 * get attribute from json string
 	 */
-	public static String getAttribute(String json, String key) throws MPException{
+	public static String getAttributeasStr(String json, String key) throws MPException{
 		ObjectNode node;
 		try {
 			node = mapper.readValue(json, ObjectNode.class);
@@ -47,12 +52,39 @@ public class JsonUtility {
 		}
 	}
 	
-	public static ObjectNode newObjectNode(String key,String value){
-		HashMap<String, String> hashMap = new HashMap<>();
-		hashMap.put(key, value);
-		ObjectNode dataNode = mapper.createObjectNode();
-		return dataNode;
+	/*
+	 * get attribute from json string
+	 */
+	public static double getAttributeasDouble(String json, String key) throws MPException{
+		ObjectNode node;
+		try {
+			node = mapper.readValue(json, ObjectNode.class);
+			if(node.has(key)){
+				return node.get(key).asDouble();
+			}else{
+				throw new MPException(ErrCode.Invalid_Request, "not found this field " + key + " in " + json);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new MPException(ErrCode.Invalid_Request, json + " " + e.getMessage());
+		}
 	}
+	
+	public static String setAttribute(String json, String key, Object value) throws MPException{
+		
+		TypeFactory typeFactory = mapper.getTypeFactory();
+		MapType mapType = typeFactory.constructMapType(HashMap.class, String.class, Object.class);
+		
+		try {
+			HashMap<String, Object> map = mapper.readValue(json, mapType);
+			map.put(key, value);
+			return mapper.writeValueAsString(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new MPException(ErrCode.Invalid_Request, e.getMessage());
+		} 
+	}
+	
 	
 	/*
 	 * make (key,value) into a json string: {key:value}
