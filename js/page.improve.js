@@ -5,10 +5,10 @@
     "query" : "一天的工作又开始了，忙并快乐着[偷笑]",
     "entrys" : [{
       "text" : "我闻到了，黑木耳的味道",
-      "img" : "http://ww2.sinaimg.cn/large/491fdd54jw1e8zwjkqwcvj218g0xc123.jpg" 
+      "url" : "http://ww2.sinaimg.cn/large/491fdd54jw1e8zwjkqwcvj218g0xc123.jpg" 
     },{
       "text" : "红宝石，蓝宝石，啊，一碰就碎",
-      "img" : "http://xinlingzu.lofter.com/post/1d33aff_b08b6d1"
+      "url" : "http://xinlingzu.lofter.com/post/1d33aff_b08b6d1"
     }]
   };
 
@@ -81,7 +81,7 @@
         images : $.map(data.entrys, function (val, idx) {
           var v = JSON.parse(val);
           return {
-            src : v.img || '',
+            src : v.url || '',
             title : v.text || '',
             answer : idx == 0 ? 1 : -1
           };
