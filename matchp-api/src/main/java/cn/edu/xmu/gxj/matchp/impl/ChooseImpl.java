@@ -45,8 +45,10 @@ public class ChooseImpl implements ChooseAPI{
 			
 			long queryStart = System.currentTimeMillis();
 			
+			long queryMid = 0;
 			while(entrys.size() != 2){
 				String[] queryPair = ltrBuilder.randomQuery();
+				queryMid = System.currentTimeMillis();
 				query = queryPair[0];
 				id = queryPair[1];
 				entrys = indexBuilder.randomDoc(query);
@@ -64,7 +66,7 @@ public class ChooseImpl implements ChooseAPI{
 			
 			long insertEnd = System.currentTimeMillis();
 			
-			Logger.info("time log: query: {}ms, insert: {}ms",queryEnd - queryStart, insertEnd - insertStart);
+			Logger.info("time log: query: {} / {}ms, insert: {}ms",queryMid - queryStart, queryEnd - queryStart, insertEnd - insertStart);
 			
 			return Response.ok(new Gson().toJson(simplePair), MediaType.APPLICATION_JSON).build();
 		} catch (MPException e) {
