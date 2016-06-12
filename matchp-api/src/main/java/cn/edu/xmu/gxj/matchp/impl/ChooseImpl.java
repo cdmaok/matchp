@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,8 +26,8 @@ import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 @Component
 public class ChooseImpl implements ChooseAPI{
 	
-	@Autowired
-	private MatchpConfig config;
+	private Logger Logger = LoggerFactory.getLogger(ChooseImpl.class);
+	
 	
 	@Autowired
 	private IndexBuilder indexBuilder;
@@ -40,6 +42,9 @@ public class ChooseImpl implements ChooseAPI{
 			String query = null;
 			String id = null;
 			ArrayList<String> entrys = new ArrayList<>();
+			
+			long queryStart = System.currentTimeMillis();
+			
 			while(entrys.size() != 2){
 				String[] queryPair = ltrBuilder.randomQuery();
 				query = queryPair[0];
@@ -47,10 +52,20 @@ public class ChooseImpl implements ChooseAPI{
 				entrys = indexBuilder.randomDoc(query);
 			}
 			
+			long queryEnd = System.currentTimeMillis();
+			
 			EntryPair pair = new EntryPair(query, id, entrys);
 			EntryPair simplePair = pair.simpleFormat();
 			String jsonString = new Gson().toJson(pair);
+			
+			long insertStart = System.currentTimeMillis();
+			
 			ltrBuilder.insetRecord(jsonString);
+			
+			long insertEnd = System.currentTimeMillis();
+			
+			Logger.info("time log: query: {}ms, insert: {}ms",queryEnd - queryStart, insertEnd - insertStart);
+			
 			return Response.ok(new Gson().toJson(simplePair), MediaType.APPLICATION_JSON).build();
 		} catch (MPException e) {
 			e.printStackTrace();
