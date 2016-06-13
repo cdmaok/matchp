@@ -48,9 +48,13 @@ public class ChooseImpl implements ChooseAPI{
 			long queryMid = 0;
 			while(entrys.size() != 2){
 				String[] queryPair = ltrBuilder.randomQuery();
+
 				queryMid = System.currentTimeMillis();
 				query = queryPair[0];
 				id = queryPair[1];
+				
+				Logger.info("random query: {}",query);
+				
 				entrys = indexBuilder.randomDoc(query);
 			}
 			

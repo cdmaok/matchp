@@ -239,6 +239,10 @@ public class IndexBuilder {
 			logger.debug(result + "," + hit.getScore());
 
 		}
+		
+		if (resultList.size() == 0) {
+			return resultList;
+		}
 		long mergeEnd = System.currentTimeMillis();
 		
 		long l2rStart = System.currentTimeMillis();
