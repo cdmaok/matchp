@@ -17,6 +17,7 @@ public class Fields {
 	public static final String imgSign = "imgSign";
 	public static final String doc_id = "doc_id";
 	public static final String imgSize = "imgSize";
+	public static final String hist = "hist";
 	
 	
 	// for entry
