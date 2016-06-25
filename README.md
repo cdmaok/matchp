@@ -35,5 +35,10 @@ img: image's url
 imgSign: image's signature  
 doc_id: text's id  
 
+## Version Note
 
+Tag | Comment | Status
+----| ------- | ------
+v1.0| origin version, can index original text | Done
+v2.0| scaling up version, add sar,ocr,hist feature, remove preprocess part into a storm application | not yet 
 
