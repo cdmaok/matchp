@@ -6,7 +6,7 @@ User can input the text and get matching picture both through UI interface and r
 
 ## About the Program
 1. It's developed by using Spring Framework and Elastic Search.
-
+2. Use Learning To Rank to match Query and Image Pair.
 
 ## How to deploy
 1. mvn package
@@ -23,8 +23,8 @@ matchp-api: program's rest api.
 
 ## TODOLIST
 1. Image de-duplication (Finished)    
-2. Learing to Rank (not yet)  
-3. Adapting to multiple source data (not yet 30%)
+2. Learing to Rank (Finished)  
+3. Adapting to multiple source data (Finished)
 4. remove image with qr code(not yet)
 5. remove image with full of text(not yet).  
 
