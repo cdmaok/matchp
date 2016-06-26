@@ -54,7 +54,7 @@ public class EntryUtilityTest {
 	
 	@Test
 	public void test(){
-		Entry entry = builder.buildEntry(0.5,hit);
+		Entry entry = builder.buildEntry(0.5,1,hit);
 //		assertEquals( 1 - (0.5-0.34) + 0.45f + 1 + 40 + 1, entry.getScore(), 0.01);
 	}
 

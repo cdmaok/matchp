@@ -26,14 +26,14 @@ public class DocFactoryTest {
 			+ "\"author\": \"BMW\", "
 			+ "\"text\": \"When the day approaches to its end,  i come close to you. You will notice my scars, so you will be acquainted that i've been wounded——《Say Birds》\", \"hot\": 87, "
 			+ "\"doc_id\": \"1d81a33a_b001329\", "
-			+ "\"ref\": \"http://68844335.lofter.com/post/1d81a33a_b001329\"}";
+			+ "\"ref\": \"http://68844335.lofter.com/post/1d81a33a_b001329\",\"Type\":\"tumblr\"}";
 	
 	
 	public static String case2 = "{\"comment\": 45, \"img\": \"http://imglf0.nosdn.127.net/img/ejdrSC9GT1BVTUFjbkpGRXg0SmFqYUl4QmdnRnp2T2wzc3RCZkZqU0ZIWU4wR3ArbkU5ejhRPT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg\", "
 			+ "\"author\": \"BMW\", "
 			+ "\"text\": \"会哭的孩子有人哄，因为他敢用最直白的方式提要求。大家都喜欢直性子，因为简单直白的表述，是表达信任的方式。拐弯抹角的软语，反而刻画了距离。含蓄，也是一种疏远。摄影师：如歌zy\", \"hot\": 87, "
 			+ "\"doc_id\": \"1d81a33a_b001339\", "
-			+ "\"ref\": \"http://chenzhiw.lofter.com/post/1ccd4f42_96275eb\"}";
+			+ "\"ref\": \"http://chenzhiw.lofter.com/post/1ccd4f42_96275eb\",\"Type\":\"tumblr\"}";
 
 	@Mock
 	MatchpConfig config;

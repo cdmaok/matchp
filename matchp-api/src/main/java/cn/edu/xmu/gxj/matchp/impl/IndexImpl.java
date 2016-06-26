@@ -22,13 +22,9 @@ public class IndexImpl implements IndexAPI {
 	@Autowired
 	private IndexBuilder indexBuilder;
 	
-	public Response AddIndex(String type,String text) {
-		if(type == null){
-			Reply notype = new Reply("you need to specify the doc type, loft or weibo", ErrCode.Invalid_Request);
-			return Response.ok(new Gson().toJson(notype),MediaType.APPLICATION_JSON).build();
-		}
+	public Response AddIndex(String text) {
 		try {
-			indexBuilder.addDoc(type,text);
+			indexBuilder.addDoc(text);
 		}  catch (MPException e1) {
 			e1.printStackTrace();
 			Reply reply = new Reply(e1.getMessage(),e1.getCode());

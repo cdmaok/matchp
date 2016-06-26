@@ -14,5 +14,5 @@ public interface IndexAPI {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	Response AddIndex(@QueryParam("type")String type,String text);
+	Response AddIndex(String text);
 }

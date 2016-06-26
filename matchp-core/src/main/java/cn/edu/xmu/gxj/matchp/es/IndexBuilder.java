@@ -37,6 +37,7 @@ import cn.edu.xmu.gxj.matchp.l2r.QueryRanker;
 import cn.edu.xmu.gxj.matchp.model.Doc;
 import cn.edu.xmu.gxj.matchp.model.DocFactory;
 import cn.edu.xmu.gxj.matchp.model.Entry;
+import cn.edu.xmu.gxj.matchp.plugins.Sar;
 import cn.edu.xmu.gxj.matchp.plugins.Sentiment;
 import cn.edu.xmu.gxj.matchp.score.EntryUtility;
 import cn.edu.xmu.gxj.matchp.score.ScoreComparator;
@@ -53,6 +54,9 @@ public class IndexBuilder {
 	
 	@Autowired
 	private Sentiment sent;
+	
+	@Autowired
+	private Sar sar;
 	
 	@Autowired
 	private DocFactory docfactory;
@@ -154,18 +158,11 @@ public class IndexBuilder {
 	}
 	
 
-	public void addDoc(String type, String json) throws MPException{
+	public void addDoc(String json) throws MPException{
 
 		Client client = getClient();
 
-// change to doc
-//		Gson gson = new Gson();
-		
-//		Weibo weibo = gson.fromJson(json, Weibo.class);
-//		Weibo newWeibo = Weibo.build(weibo);
-//		newWeibo.setPolarity(sent.getSentiment(newWeibo.getText()));
-//		newWeibo.setImgSignature(signSever.getSignature(newWeibo.getImg_url()));
-		
+		String type = JsonUtility.getAttributeasStr(json, Fields.type);
 		try {
 			Doc document = docfactory.Build(json);
 			IndexRequestBuilder indexRequestBuilder = client.prepareIndex(indexName, type , document.getDoc_id());
@@ -213,6 +210,7 @@ public class IndexBuilder {
 
 
 		double querySenti = sent.getSentiment(query);
+		int sarLabel = sar.getSar(query);
 		long mergeStart = System.currentTimeMillis();
 		SearchHit[] results = response.getHits().getHits();
 		ArrayList<String> resultList = new ArrayList<String>();
@@ -223,7 +221,7 @@ public class IndexBuilder {
 		for (SearchHit hit : results) {
 			Map<String, Object> result = hit.getSource();
 //			Entry entry = entryBuilder.buildEntry(querySenti, hit);
-			String entryString = entryBuilder.buildJson(querySenti, hit);
+			String entryString = entryBuilder.buildJson(querySenti,sarLabel, hit);
 			//TODO: this de-duplication is ugly.
 			
 			String sign = MapUtils.getString(result, Fields.imgSign, "");

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
+import org.elasticsearch.action.percolate.PercolateSourceBuilder.DocBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,24 +20,18 @@ import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 @Component
 public class EntryUtility {
 	
-	@Autowired
-	private MatchpConfig config;
 	
-	private final String TypeScore = "TypeScore";
 	private final String SentiScore = "SentiScore";
 	private final String IrScore = "IrScore";
-	private final String FinScore = Fields.score;
-	private final String SizeScore = "SizeScore";
 	private final String FeatureVector = "feature";
 	
-	private double[] weights = new double[]{0.99569356, -0.16700651, 0.78396082 , -0.13378303,0.0015323567};
 	
 
-	public  Entry buildEntry(double querySenti,SearchHit hit){
-		Map<String, Object> map = calScore(querySenti, hit);
+	public  Entry buildEntry(double querySenti,int sar, SearchHit hit){
+		Map<String, Object> map = calScore(querySenti, sar , hit);
 		String text = (String) map.get(Fields.text);
 		String url = (String) map.get(Fields.img);
-		return new Entry(text, url, (double) map.get(FinScore));
+		return new Entry(text, url, MapUtils.getDoubleValue(map, Fields.score, 0));
 	}
 	
 	public static ArrayList<Entry> buildEntryArray(ArrayList<String> stringArray) throws MPException{
@@ -55,41 +50,54 @@ public class EntryUtility {
 		return entrys;
 	}
 	
-	public  String buildJson(double querySenti,SearchHit hit){
-		Map<String, Object> map = calScore(querySenti, hit);
+	public  String buildJson(double querySenti,int sarLabel,SearchHit hit){
+		Map<String, Object> map = calScore(querySenti,sarLabel, hit);
 		return new Gson().toJson(map);
 	}
 	
-	public Map<String, Object> calScore(double querySenti,SearchHit hit){
+	public Map<String, Object> calScore(double querySenti,int sarLabel,SearchHit hit){
 		Map<String, Object> map = hit.getSource();
 		double irScore = hit.getScore();
 		double sentiScore = 0;
-		double typeScore = 0;
-		double socialScore = 0;
-		
-		String vector = "";
 
-		double[] typeAndsocial = calSocialScore(hit);
-		typeScore =  typeAndsocial[0];
-		socialScore = typeAndsocial[1];
 		
-		if (config.isSentiment_enable()) {
-			double resultSenti = (double) map.get(Fields.polarity);
-			sentiScore = calSentiment(querySenti, resultSenti);
-		}
+		StringBuffer vector = new StringBuffer();
 
 		double sizeScore = MapUtils.getDoubleValue(map, Fields.imgSize, 0);
 
-		//TODO: change the calculation
-		double score = weights[0]* sizeScore + weights[1]* sentiScore + weights[2] * irScore + weights[3] * typeScore + weights[4] *socialScore;
+		double resultSenti = MapUtils.getDoubleValue(map, Fields.polarity, 0);
+		sentiScore = calSentiment(querySenti, resultSenti);
 		
-		vector = "1 qid:1 1:" + sizeScore + " 2:" + sentiScore + " 3:" + irScore + " 4:" + typeScore + " 5:" + socialScore;
+		int type = MapUtils.getIntValue(map, Fields.type, 0);
+		
+		int socialScore = MapUtils.getIntValue(map, Fields.SOSCORE_FIELD, 0);
+		
+		int resultSAR = MapUtils.getIntValue(map, Fields.SAR_FIELD,0);
+		int sar = sar(sarLabel, resultSAR);
+		
+		String[] ocrs = MapUtils.getString(map, Fields.OCR_FIELD, "0,0").split(",");
+		
+		vector.append("1 qid:1 1:");
+		vector.append(sizeScore);
+		vector.append(" 2:");
+		vector.append(sentiScore);
+		vector.append(" 3:");
+		vector.append(irScore);
+		vector.append(" 4:");
+		vector.append(type);
+		vector.append(" 5:");
+		vector.append(socialScore);
+		vector.append(" 6:");
+		vector.append(sar);
+		vector.append(" 7:");
+		vector.append(ocrs[0]);
+		vector.append(" 8:");
+		vector.append(ocrs[1]);
+		
+//		vector = "1 qid:1 1:" + sizeScore + " 2:" + sentiScore + " 3:" + irScore + " 4:" + type + " 5:" + socialScore + " 6:" + ;
 		
 		//TODO: may be change to constant field
-		map.put(TypeScore, typeScore);
 		map.put(IrScore, irScore);
-		map.put(SentiScore, sentiScore);
-		map.put(FinScore, score);
 		map.put(FeatureVector, vector);
 		
 		return map;
@@ -99,28 +107,8 @@ public class EntryUtility {
 		return 1 - Math.abs(query - result);
 	}
 	
-	public double[] calSocialScore(SearchHit hit){
-		double typeScore,socialScore;
-		Map<String, Object> map = hit.getSource();
-		switch (hit.getType()) {
-		case "loft":
-			typeScore = 1;
-			socialScore = (Integer)map.get(Fields.loft_comments) + (Integer)map.get(Fields.loft_hot);
-			break;
-		case "weibo":
-			typeScore = 0.5;
-			socialScore = (Integer)map.get(Fields.weibo_comments) + (Integer)map.get(Fields.weibo_goods) + (Integer)map.get(Fields.weibo_repost);
-			break;
-		case "tumblr":
-			typeScore = 2;
-			socialScore = (Integer) map.get(Fields.tumblr_hot);
-			break;
-		default:
-			typeScore = 0;
-			socialScore = 0;
-			break;
-		}
-		return new double[]{typeScore,socialScore};
+	public int sar(int query,int result){
+		return Math.abs(query - result);
 	}
 	
 }

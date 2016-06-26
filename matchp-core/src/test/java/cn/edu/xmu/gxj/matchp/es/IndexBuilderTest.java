@@ -78,7 +78,7 @@ public class IndexBuilderTest {
 	public void testLoft(){
 		String type = "loft";
 		try {
-			builder.addDoc(type, DocFactoryTest.case1);
+			builder.addDoc(DocFactoryTest.case1);
 			String query = "scars scars ";
 			String result = builder.searchDoc(query);
 			
@@ -97,7 +97,7 @@ public class IndexBuilderTest {
 	public void testLoftChinese(){
 		String type = "loft";
 		try {
-			builder.addDoc(type, DocFactoryTest.case2);
+			builder.addDoc(DocFactoryTest.case2);
 			String query = "拐弯抹角  软语";
 			String result = builder.searchDoc(query);
 			

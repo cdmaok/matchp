@@ -32,6 +32,9 @@ public class MatchpConfig {
 	private final boolean image_sign_enable;
 	private final String image_sign_server;
 	
+	private final boolean sar_enable;
+	private final String sar_server;
+	
 	private final String ltr_mongo_url;
 	
 	
@@ -68,6 +71,9 @@ public class MatchpConfig {
 		
 		this.image_sign_enable = Boolean.parseBoolean(configOrDefault("IMAGE_SIGN_ENABLE", "true"));
 		this.image_sign_server = configOrDefault("IMAGE_SIGN_IP", "localhost:8000");
+		
+		this.sar_enable = Boolean.parseBoolean(configOrDefault("SAR_ENABLE", "false"));
+		this.sar_server = configOrDefault("SAR_IP", "localhost:8000");
 		
 		this.ltr_mongo_url = configOrDefault("LTR_MONGO_URL", "mongodb://127.0.0.1:27017/matchp");
 		
@@ -136,6 +142,14 @@ public class MatchpConfig {
 
 	public String getLtr_mongo_url() {
 		return ltr_mongo_url;
+	}
+	
+	public boolean isSar_enable() {
+		return sar_enable;
+	}
+
+	public String getSar_server() {
+		return sar_server;
 	}
 
 	public static void main(String[] args) throws FileNotFoundException, IOException{
