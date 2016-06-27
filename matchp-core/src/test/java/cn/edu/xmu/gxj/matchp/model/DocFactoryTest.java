@@ -22,18 +22,23 @@ import java.util.Map;
 @RunWith(MockitoJUnitRunner.class)
 public class DocFactoryTest {
 	
-	public static String case1 = "{\"comment\": 0, \"img\": \"http://imglf0.nosdn.127.net/img/ejdrSC9GT1BVTUFjbkpGRXg0SmFqYUl4QmdnRnp2T2wzc3RCZkZqU0ZIWU4wR3ArbkU5ejhRPT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg\", "
-			+ "\"author\": \"BMW\", "
-			+ "\"text\": \"When the day approaches to its end,  i come close to you. You will notice my scars, so you will be acquainted that i've been wounded——《Say Birds》\", \"hot\": 87, "
-			+ "\"doc_id\": \"1d81a33a_b001329\", "
-			+ "\"ref\": \"http://68844335.lofter.com/post/1d81a33a_b001329\",\"Type\":\"tumblr\"}";
-	
-	
-	public static String case2 = "{\"comment\": 45, \"img\": \"http://imglf0.nosdn.127.net/img/ejdrSC9GT1BVTUFjbkpGRXg0SmFqYUl4QmdnRnp2T2wzc3RCZkZqU0ZIWU4wR3ArbkU5ejhRPT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg\", "
-			+ "\"author\": \"BMW\", "
-			+ "\"text\": \"会哭的孩子有人哄，因为他敢用最直白的方式提要求。大家都喜欢直性子，因为简单直白的表述，是表达信任的方式。拐弯抹角的软语，反而刻画了距离。含蓄，也是一种疏远。摄影师：如歌zy\", \"hot\": 87, "
-			+ "\"doc_id\": \"1d81a33a_b001339\", "
-			+ "\"ref\": \"http://chenzhiw.lofter.com/post/1ccd4f42_96275eb\",\"Type\":\"tumblr\"}";
+	public static String case1 = "{\"text\":\"SPACE 03 , Antwerp , Belgium ,Lanren  JUNYUAN\",\"imgSign\":\"30824421520e00f0\","
+			+ "\"img\":\"http://imglf.nosdn.127.net/img/K2lnZGdYdHRweU1GeU1PR2tVODJoWERzckJZNDR5YkRpamd6NUp3UzUxOTJSR0lidHJqbFV3PT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg%7Cwatermark&type=2&text=wqkg5oeS5Lq6IC8gbGFucmVuanVueXVhbi5sb2Z0ZXIuY29t&font=bXN5aA==&gravity=southwest&dissolve=30&fontsize=240&dx=8&dy=10&stripmeta=0\","
+			+ "\"type\":\"lofter\",\"ocr\":\"0,0\",\"author\":\"Emperor or 神经病患者\","
+			+ "\"ref\":\"http://drinkingsakiyamamotoboringshit.lofter.com/post/1cfca106_b4b9dd4\",\"socialScore\":1,\"polarity\":\"0.37140729529840966\","
+			+ "\"hist\":\"39.0625,24.0,46.2458472235\",\"sar\":\"c\",\"doc_id\":\"1cfca106_b4b9dd4\",\"hot\":1,\"comment\":0,\"imgSize\":0.618}";
+	public static String text1 = "SPACE 03 , Antwerp , Belgium ,Lanren  JUNYUAN";
+	public static String img1 = "http://imglf.nosdn.127.net/img/K2lnZGdYdHRweU1GeU1PR2tVODJoWERzckJZNDR5YkRpamd6NUp3UzUxOTJSR0lidHJqbFV3PT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg%7Cwatermark&type=2&text=wqkg5oeS5Lq6IC8gbGFucmVuanVueXVhbi5sb2Z0ZXIuY29t&font=bXN5aA==&gravity=southwest&dissolve=30&fontsize=240&dx=8&dy=10&stripmeta=0";
+	public static String doc1 = "1cfca106_b4b9dd4";
+	//{"text":"SPACE 03 , Antwerp , Belgium ,Lanren  JUNYUAN","imgSign":"30824421520e00f0","img":"http://imglf.nosdn.127.net/img/K2lnZGdYdHRweU1GeU1PR2tVODJoWERzckJZNDR5YkRpamd6NUp3UzUxOTJSR0lidHJqbFV3PT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg%7Cwatermark&type=2&text=wqkg5oeS5Lq6IC8gbGFucmVuanVueXVhbi5sb2Z0ZXIuY29t&font=bXN5aA==&gravity=southwest&dissolve=30&fontsize=240&dx=8&dy=10&stripmeta=0","type":"lofter","ocr":"0,0","author":"Emperor or 神经病患者","ref":"http://drinkingsakiyamamotoboringshit.lofter.com/post/1cfca106_b4b9dd4","socialScore":1,"polarity":"0.37140729529840966","hist":"39.0625,24.0,46.2458472235","sar":"c","doc_id":"1cfca106_b4b9dd4","hot":1,"comment":0,"imgSize":0.618}
+	//{"text":"风起-云涌","imgSign":"c30ff68f072000ff","img":"http://imglf1.ph.126.net/GD81G-v7-8rh_COkgSntZQ==/782781910332393652.jpg","type":"lofter","ocr":"0,0","author":"摄影酱ߓ¸","ref":"http://598826423.lofter.com/post/1d8907f0_b4b10b7","socialScore":22,"polarity":"0.4737150425347657","hist":"39.0625,29.0,70.1062716375","sar":"c","doc_id":"1d8907f0_b4b10b7","hot":22,"comment":0,"imgSize":0.618}
+	public static String case2 = "{\"text\":\"风起-云涌\",\"imgSign\":\"c30ff68f072000ff\","
+			+ "\"img\":\"http://imglf1.ph.126.net/GD81G-v7-8rh_COkgSntZQ==/782781910332393652.jpg\","
+			+ "\"type\":\"lofter\",\"ocr\":\"0,0\",\"author\":\"摄影酱ߓ¸\",\"ref\":\"http://598826423.lofter.com/post/1d8907f0_b4b10b7\",\"socialScore\":22,"
+			+ "\"polarity\":\"0.4737150425347657\",\"hist\":\"39.0625,29.0,70.1062716375\",\"sar\":\"c\",\"doc_id\":\"1d8907f0_b4b10b7\",\"hot\":22,\"comment\":0,\"imgSize\":0.618}";
+	public static String text2 = "风起-云涌";
+	public static String img2 = "http://imglf1.ph.126.net/GD81G-v7-8rh_COkgSntZQ==/782781910332393652.jpg";
+	public static String doc2 = "1d8907f0_b4b10b7";
 
 	@Mock
 	MatchpConfig config;
@@ -63,9 +68,9 @@ public class DocFactoryTest {
 		Doc doc;
 		try {
 			doc = factory.Build(case1);
-			assertEquals("When the day approaches to its end,  i come close to you. You will notice my scars, so you will be acquainted that i've been wounded——《Say Birds》", doc.getText());
-			assertEquals("http://imglf0.nosdn.127.net/img/ejdrSC9GT1BVTUFjbkpGRXg0SmFqYUl4QmdnRnp2T2wzc3RCZkZqU0ZIWU4wR3ArbkU5ejhRPT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg", doc.getImg());
-			assertEquals("1d81a33a_b001329", doc.getDoc_id());
+			assertEquals(text1, doc.getText());
+			assertEquals(img1, doc.getImg());
+			assertEquals(doc1, doc.getDoc_id());
 			Map<String, Object> content = doc.getContent();
 			assertTrue(content.containsKey("ref"));
 			assertTrue(content.containsKey("author"));
@@ -83,9 +88,9 @@ public class DocFactoryTest {
 		Doc doc;
 		try {
 			doc = factory.Build(case2);
-			assertEquals("会哭的孩子有人哄，因为他敢用最直白的方式提要求。大家都喜欢直性子，因为简单直白的表述，是表达信任的方式。拐弯抹角的软语，反而刻画了距离。含蓄，也是一种疏远。摄影师：如歌zy", doc.getText());
-			assertEquals("http://imglf0.nosdn.127.net/img/ejdrSC9GT1BVTUFjbkpGRXg0SmFqYUl4QmdnRnp2T2wzc3RCZkZqU0ZIWU4wR3ArbkU5ejhRPT0.jpg?imageView&thumbnail=500x0&quality=96&stripmeta=0&type=jpg", doc.getImg());
-			assertEquals("1d81a33a_b001339", doc.getDoc_id());
+			assertEquals(text2, doc.getText());
+			assertEquals(img2, doc.getImg());
+			assertEquals(doc2, doc.getDoc_id());
 			Map<String, Object> content = doc.getContent();
 			assertTrue(content.containsKey("ref"));
 			assertTrue(content.containsKey("author"));

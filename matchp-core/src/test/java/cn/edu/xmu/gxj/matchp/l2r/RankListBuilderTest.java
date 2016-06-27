@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import ciir.umass.edu.learning.DataPoint;
 import ciir.umass.edu.learning.RankList;
+import cn.edu.xmu.gxj.matchp.model.Doc;
+import cn.edu.xmu.gxj.matchp.model.DocFactory;
 
 public class RankListBuilderTest {
 	

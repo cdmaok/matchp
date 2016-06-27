@@ -1,12 +1,10 @@
 package cn.edu.xmu.gxj.matchp.es;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
@@ -76,7 +72,6 @@ public class IndexBuilderTest {
 	@Ignore
 	@Test
 	public void testLoft(){
-		String type = "loft";
 		try {
 			builder.addDoc(DocFactoryTest.case1);
 			String query = "scars scars ";

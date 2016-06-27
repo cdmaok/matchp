@@ -1,7 +1,5 @@
 package cn.edu.xmu.gxj.matchp.impl;
 
-import java.io.IOException;
-
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 

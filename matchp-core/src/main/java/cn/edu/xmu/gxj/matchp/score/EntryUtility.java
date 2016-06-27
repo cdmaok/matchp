@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.collections4.MapUtils;
-import org.elasticsearch.action.percolate.PercolateSourceBuilder.DocBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -15,7 +13,6 @@ import cn.edu.xmu.gxj.matchp.model.Entry;
 import cn.edu.xmu.gxj.matchp.util.Fields;
 import cn.edu.xmu.gxj.matchp.util.JsonUtility;
 import cn.edu.xmu.gxj.matchp.util.MPException;
-import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
 
 @Component
 public class EntryUtility {
@@ -77,6 +74,8 @@ public class EntryUtility {
 		
 		String[] ocrs = MapUtils.getString(map, Fields.OCR_FIELD, "0,0").split(",");
 		
+		String[] hists = MapUtils.getString(map, Fields.HIST_FIELD,"0,0,0").split(",");
+		
 		vector.append("1 qid:1 1:");
 		vector.append(sizeScore);
 		vector.append(" 2:");
@@ -93,12 +92,18 @@ public class EntryUtility {
 		vector.append(ocrs[0]);
 		vector.append(" 8:");
 		vector.append(ocrs[1]);
+		vector.append(" 9:");
+		vector.append(hists[0]);
+		vector.append(" 10:");
+		vector.append(hists[1]);
+		vector.append(" 11:");
+		vector.append(hists[2]);
 		
 //		vector = "1 qid:1 1:" + sizeScore + " 2:" + sentiScore + " 3:" + irScore + " 4:" + type + " 5:" + socialScore + " 6:" + ;
 		
 		//TODO: may be change to constant field
 		map.put(IrScore, irScore);
-		map.put(FeatureVector, vector);
+		map.put(FeatureVector, vector.toString());
 		
 		return map;
 	}

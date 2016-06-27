@@ -26,7 +26,8 @@ public class DocFactory {
 	 * check the input has the necessary field or not
 	 */
 	private  boolean checkMap(Map<String, Object> map) throws MPException {
-		String[] checkList = new String[] { Fields.text, Fields.img, Fields.doc_id };
+		String[] checkList = new String[] { Fields.text, Fields.img, Fields.doc_id ,
+				Fields.imgSize,Fields.imgSign,Fields.type,Fields.SOSCORE_FIELD,Fields.SAR_FIELD,Fields.OCR_FIELD,Fields.HIST_FIELD};
 		for (int i = 0; i < checkList.length; i++) {
 			String field = checkList[i];
 			if (!map.containsKey(field)) {

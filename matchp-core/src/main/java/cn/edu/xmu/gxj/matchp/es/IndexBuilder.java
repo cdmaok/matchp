@@ -251,7 +251,7 @@ public class IndexBuilder {
 		
 		for (int i = 0; i < pros.length; i++) {
 //			resultList.get(i).setScore((float) pros[i]);
-			JsonUtility.setAttribute(resultList.get(i), Fields.score, pros[i]);
+			resultList.set(i, JsonUtility.setAttribute(resultList.get(i), Fields.score, pros[i]));
 		}
 		
 		long l2rEnd = System.currentTimeMillis();

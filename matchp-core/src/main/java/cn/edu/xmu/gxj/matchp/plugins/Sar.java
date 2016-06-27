@@ -1,6 +1,7 @@
 package cn.edu.xmu.gxj.matchp.plugins;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 
@@ -19,6 +20,7 @@ import com.google.gson.Gson;
 import cn.edu.xmu.gxj.matchp.model.Reply;
 import cn.edu.xmu.gxj.matchp.util.JsonUtility;
 import cn.edu.xmu.gxj.matchp.util.MatchpConfig;
+import groovy.lang.MetaClassImpl.Index;
 
 @Component
 public class Sar {
@@ -30,7 +32,8 @@ public class Sar {
 	private String host;
 	private String url_str;
 	
-	private String[] labels = new String[]{"s","c","o","l","t","q","m","p"};
+	private HashMap<String, Integer> labels = new HashMap<>();
+	
 	
 	@PostConstruct
 	public void init(){
@@ -40,6 +43,15 @@ public class Sar {
 			url_str += "/";
 		}
 		url_str += api;
+		int index = 0;
+		labels.put("s", index ++);
+		labels.put("c", index ++);
+		labels.put("o", index ++);
+		labels.put("l", index ++);
+		labels.put("t", index ++);
+		labels.put("q", index ++);
+		labels.put("m", index ++);
+		labels.put("p", index ++);
 	}
 	
 	public int getSar(String text){
@@ -64,7 +76,7 @@ public class Sar {
 			httpclient.close();
 			int label = 0;
 			if(sentScore.getCode() == 200){
-				label = Integer.parseInt(sentScore.getMessage());
+				label = labels.get(sentScore.getMessage());
 			}else{
 				label = 0;
 			}
