@@ -229,7 +229,8 @@ public class IndexBuilder {
 			if (!signs.contains(sign)) {
 				resultList.add(entryString);
 				signs.add(sign);
-				String vector = MapUtils.getString(result, "feature","");
+				String vector = MapUtils.getString(result, Fields.FeatureVector,"");
+				vector = "1 qid:1" + vector;
 				vectors.add(vector);
 			}else{
 				logger.debug("find the duplicated one. sign is {}, url is {}", sign, JsonUtility.getAttributeasStr(entryString, Fields.img));
