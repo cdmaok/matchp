@@ -50,6 +50,8 @@ public class LtrBuilderTest {
 		System.out.println(trainData);
 	}
 	
+	@Deprecated
+	@Ignore
 	@Test
 	public void testdoc2pair(){
 		String docjson = "{ \"_id\" : \"57563ba7d59373472a2b955f\",\"query\" : \"杭州今天是要下雪了吗？感觉打到车上的是小冰粒。\", \"entrys\" : [\"{\\\"uid\\\":0,"
