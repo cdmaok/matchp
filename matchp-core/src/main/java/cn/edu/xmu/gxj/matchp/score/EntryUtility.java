@@ -20,7 +20,7 @@ public class EntryUtility {
 	
 	private final String SentiScore = "SentiScore";
 	private final String IrScore = "IrScore";
-	private final String FeatureVector = "feature";
+
 	
 	
 
@@ -76,7 +76,7 @@ public class EntryUtility {
 		
 		String[] hists = MapUtils.getString(map, Fields.HIST_FIELD,"0,0,0").split(",");
 		
-		vector.append("1 qid:1 1:");
+		vector.append(" 1:");
 		vector.append(sizeScore);
 		vector.append(" 2:");
 		vector.append(sentiScore);
@@ -103,7 +103,7 @@ public class EntryUtility {
 		
 		//TODO: may be change to constant field
 		map.put(IrScore, irScore);
-		map.put(FeatureVector, vector.toString());
+		map.put(Fields.FeatureVector, vector.toString());
 		
 		return map;
 	}

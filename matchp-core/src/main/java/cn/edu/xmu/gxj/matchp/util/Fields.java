@@ -35,4 +35,6 @@ public class Fields {
 	public static final String SAR_FIELD = "sar"; //use
 	public static final String OCR_FIELD = "ocr"; 
 	public static final String HIST_FIELD = "hist";
+	
+	public static final String FeatureVector = "feature";
 }

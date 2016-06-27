@@ -119,6 +119,7 @@ public class LtrBuilder {
 	
 	
 	public String doc2pair(int index, Document document){
+		
 		StringBuffer pair = new StringBuffer();
 		int answer = document.getInteger(ANSWER);
 		String first = "";
@@ -136,23 +137,26 @@ public class LtrBuilder {
 		Document firstDoc = Document.parse(entrys.get(0));
 		Document secondDoc = Document.parse(entrys.get(1));
 
-		first = addFeature(first, firstDoc, 1, Fields.imgSize);
-		first = addFeature(first, firstDoc, 2, "SentiScore");
-		first = addFeature(first, firstDoc, 3, "IrScore");
-		first = addFeature(first, firstDoc, 4, "TypeScore");
-		first = addFeature(first, firstDoc, 5, "social");
+		first += firstDoc.getString(Fields.FeatureVector);
+		second += secondDoc.getString(Fields.FeatureVector);
+//		first = addFeature(first, firstDoc, 1, Fields.imgSize);
+//		first = addFeature(first, firstDoc, 2, "SentiScore");
+//		first = addFeature(first, firstDoc, 3, "IrScore");
+//		first = addFeature(first, firstDoc, 4, "TypeScore");
+//		first = addFeature(first, firstDoc, 5, "social");
 		
 		
-		second = addFeature(second, secondDoc, 1, Fields.imgSize);
-		second = addFeature(second, secondDoc, 2, "SentiScore");
-		second = addFeature(second, secondDoc, 3, "IrScore");
-		second = addFeature(second, secondDoc, 4, "TypeScore");
-		second = addFeature(second, secondDoc, 5, "social");
+//		second = addFeature(second, secondDoc, 1, Fields.imgSize);
+//		second = addFeature(second, secondDoc, 2, "SentiScore");
+//		second = addFeature(second, secondDoc, 3, "IrScore");
+//		second = addFeature(second, secondDoc, 4, "TypeScore");
+//		second = addFeature(second, secondDoc, 5, "social");
 		
 		pair.append(first + "\n" + second);
 		return pair.toString();
 	}
 	
+	@Deprecated
 	//TODO: to merge with entrybuilder social score
 	public double getSocialScore(Document map){
 		double socialScore = 0;
@@ -169,6 +173,7 @@ public class LtrBuilder {
 		return socialScore;
 	}
 	
+	@Deprecated
 	public String addFeature(String str,Document document, int index ,String field){
 		if (field.equals("social")) {
 			return str + " " + index + ":" + getSocialScore(document);
