@@ -12,7 +12,7 @@ def addIndex(filepath,indexType,start=0):
 	size = len(weibos[start:])
 	for index,weibo in enumerate(weibos[start:]):
 		fetch_weibo(url+api + '?type=' + indexType,weibo)
-		print 'finish %d / %d' %(index,size)
+		print 'finish %d / %d' %(index + start ,size + start)
 		if index % 1000 == 0:
 			time.sleep(60)
 
@@ -30,7 +30,7 @@ def fetch_weibo(url,text):
 
 
 if __name__ == '__main__':
-	if len(sys.argv) != 3:
+	if len(sys.argv) <= 3:
 		print 'need a file. and type'
 		sys.exit()
 	else:

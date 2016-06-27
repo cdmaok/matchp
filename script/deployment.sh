@@ -21,8 +21,8 @@ sudo sh startup.sh
 sleep 25s
 curl -m 1 http://localhost:8080/matchp-web/api/query?q=abc
 if [ 0 -eq $? ];then
-	echo 'finish update'
+	echo 'finish update\n'
 else
-	echo 'we may lost tomcat. check it manually.'
+	echo 'we may lost tomcat. check it manually.\n'
 fi;
 
